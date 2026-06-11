@@ -25,7 +25,7 @@ export type Agent = {
 export const AGENTS: Agent[] = [
   {
     id: "homework",
-    name: "과제풀이",
+    name: "homework-solver",
     category: "공부",
     tagline: "기말 풀이 PDF가 텔레그램으로 도착",
     description:
@@ -34,71 +34,19 @@ export const AGENTS: Agent[] = [
     image: "/agents/homework/card.png",
     status: "live",
     demo: {
-      command: "/과제풀이 유기화학1 2024 기말고사",
+      command: "/homework-solver 유기화학1 2024 기말고사",
       steps: [
         { label: "수업자료 대조", delayMs: 900 },
         { label: "그림 8개 생성 — 스스로 검증 통과", delayMs: 1700 },
         { label: "계산 23개 재확인", delayMs: 2500 },
       ],
       resultImage: "/agents/homework/result.png",
-      resultCaption: "풀이 PDF 19쪽 — Telegram 도착",
+      resultCaption: "풀이 PDF 17쪽 — Telegram 도착",
     },
-  },
-  {
-    id: "figures",
-    name: "그림 생성",
-    category: "공부",
-    tagline: "스스로 검증을 통과해야 나오는 그림",
-    description:
-      "Newman 투영도부터 Mohr 원까지 — 라벨과 배치를 스스로 검사해서, 통과한 그림만 PDF로 내보냅니다.",
-    accent: "orange",
-    image: "/agents/figures/card.png",
-    status: "live",
-    demo: {
-      command: "/그림작성 Mohr 원 — 삼축압축 3세트",
-      steps: [
-        { label: "도면 구성", delayMs: 900 },
-        { label: "라벨·배치 자동 검사 — 통과", delayMs: 1900 },
-      ],
-      resultImage: "/agents/figures/result.png",
-      resultCaption: "검증 통과 그림 PDF — Telegram 도착",
-    },
-  },
-  {
-    id: "paper",
-    name: "논문 분석",
-    category: "공부",
-    tagline: "논문 한 편이 분석 보고서로",
-    description:
-      "본문은 물론 그림과 표까지 함께 읽고, 핵심 기여와 한계를 정리한 분석 PDF를 보내줍니다.",
-    accent: "blue",
-    image: "/agents/paper/card.png",
-    status: "live",
-    demo: {
-      command: "/논문 deep — arXiv 논문 1편",
-      steps: [
-        { label: "본문 9개 섹션 분석", delayMs: 900 },
-        { label: "그림·표 판독", delayMs: 1800 },
-        { label: "분석 PDF 생성", delayMs: 2600 },
-      ],
-      resultImage: "/agents/paper/result.png",
-      resultCaption: "논문 분석 PDF — Telegram 도착",
-    },
-  },
-  {
-    id: "analysis",
-    name: "강의분석",
-    category: "공부",
-    tagline: "막히는 개념을 수업자료 기준으로 다시 설명",
-    description:
-      "수업에서 다룬 범위 안에서 개념을 다시 설명하고, 어느 자료 어느 페이지에서 나온 내용인지 출처를 함께 보여줍니다.",
-    accent: "purple",
-    image: "/agents/analysis/card.png",
-    status: "live",
   },
   {
     id: "notes",
-    name: "공부노트",
+    name: "study-notes",
     category: "공부",
     tagline: "기출이 알려주는 범위로 만든 시험 대비 노트",
     description:
@@ -106,10 +54,63 @@ export const AGENTS: Agent[] = [
     accent: "green",
     image: "/agents/notes/card.png",
     status: "live",
+    demo: {
+      command: "/study-notes 탄성파탐사 Ch1~3 시험 대비",
+      steps: [
+        { label: "기출 전체에서 출제 개념 추출", delayMs: 900 },
+        { label: "수업자료 출처와 함께 정리", delayMs: 1800 },
+        { label: "공부노트 PDF 생성", delayMs: 2600 },
+      ],
+      resultImage: "/agents/notes/result.png",
+      resultCaption: "공부노트 PDF — Telegram 도착",
+    },
+  },
+  {
+    id: "analysis",
+    name: "course-analyzer",
+    category: "공부",
+    tagline: "막히는 개념을 수업자료 기준으로 다시 설명",
+    description:
+      "수업에서 다룬 범위 안에서 개념을 다시 설명하고, 어느 자료 어느 페이지에서 나온 내용인지 출처를 함께 보여줍니다.",
+    accent: "purple",
+    image: "/agents/analysis/card.png",
+    status: "live",
+    demo: {
+      command: "/course-analyzer 석유가스공학 Drawdown Test",
+      steps: [
+        { label: "수업자료에서 해당 범위 정독", delayMs: 900 },
+        { label: "개념 설명 — 출처 페이지 표기", delayMs: 1800 },
+        { label: "분석 PDF 생성", delayMs: 2500 },
+      ],
+      resultImage: "/agents/analysis/result.png",
+      resultCaption: "개념 분석 PDF — Telegram 도착",
+    },
+  },
+  {
+    id: "figures",
+    name: "figure-writer",
+    category: "공부",
+    tagline: "스스로 검증을 통과해야 나오는 그림",
+    description:
+      "Newman 투영도부터 Mohr 원까지 — 라벨과 배치를 스스로 검사해서, 통과한 그림만 PDF로 내보냅니다.",
+    accent: "orange",
+    image: "/agents/figures/card.png",
+    status: "live",
+  },
+  {
+    id: "paper",
+    name: "paper-analyzer",
+    category: "공부",
+    tagline: "논문 한 편이 분석 보고서로",
+    description:
+      "본문은 물론 그림과 표까지 함께 읽고, 핵심 기여와 한계를 정리한 분석 PDF를 보내줍니다.",
+    accent: "blue",
+    image: "/agents/paper/card.png",
+    status: "live",
   },
   {
     id: "lecture",
-    name: "강의정리",
+    name: "lecture-transcriber",
     category: "공부",
     tagline: "강의 영상이 정리 노트로",
     description:
@@ -120,7 +121,7 @@ export const AGENTS: Agent[] = [
   },
   {
     id: "lab",
-    name: "실험보고서",
+    name: "lab-discussion",
     category: "공부",
     tagline: "결과보고서 Discussion 초안을 문헌과 함께",
     description:
@@ -131,7 +132,7 @@ export const AGENTS: Agent[] = [
   },
   {
     id: "cogva",
-    name: "학습 뷰어 Cogva",
+    name: "Cogva",
     category: "공부",
     tagline: "과목 자료와 풀이를 한 화면에서",
     description:

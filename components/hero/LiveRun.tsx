@@ -21,8 +21,8 @@ const ACCENT_VAR = {
 // 결과 이미지 실제 픽셀 치수 — next/image width/height 필수
 const IMAGE_DIMS: Record<string, { width: number; height: number }> = {
   "/agents/homework/result.png": { width: 1200, height: 1696 },
-  "/agents/figures/result.png": { width: 1035, height: 581 },
-  "/agents/paper/result.png": { width: 1200, height: 1696 },
+  "/agents/notes/result.png": { width: 1200, height: 1696 },
+  "/agents/analysis/result.png": { width: 1200, height: 1696 },
 };
 
 // 애니메이션 단계 타입
