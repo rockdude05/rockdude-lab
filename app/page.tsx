@@ -6,6 +6,7 @@ import LiveRun from "@/components/hero/LiveRun";
 import AgentGrid from "@/components/AgentGrid";
 import Journey from "@/components/Journey";
 import Stats from "@/components/Stats";
+import InquiryForm from "@/components/InquiryForm";
 
 export default function Home() {
   return (
@@ -65,6 +66,9 @@ export default function Home() {
 
       {/* 지표 카운트업 섹션 */}
       <Stats />
+
+      {/* 문의 폼 섹션 */}
+      <InquiryForm />
     </>
   );
 }
