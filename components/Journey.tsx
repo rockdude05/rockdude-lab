@@ -14,25 +14,25 @@ const CUTS = [
   {
     step: "① 시험지 도착",
     desc: "사진이든 PDF든 — 시험지 한 장이면 시작됩니다",
-    glow: "rgba(255, 196, 110, 0.14)",
+    glow: "rgba(255, 196, 110, 0.24)", // 따뜻한 색은 어두운 배경에서 체감 밝기가 낮아 알파를 높임
     num: "01",
   },
   {
     step: "② 문제·그림 정밀 판독",
     desc: "글자만이 아니라 구조식·그래프의 입체 정보까지 읽습니다",
-    glow: "rgba(63, 199, 123, 0.16)",
+    glow: "rgba(63, 199, 123, 0.20)",
     num: "02",
   },
   {
     step: "③ 풀이 생성 + 자체 검증",
     desc: "계산은 두 번 확인하고, 그림은 스스로 검사를 통과해야 실립니다",
-    glow: "rgba(77, 139, 255, 0.16)",
+    glow: "rgba(77, 139, 255, 0.24)",
     num: "03",
   },
   {
     step: "④ 텔레그램 도착",
     desc: "검증을 마친 풀이와 그림이 PDF로 도착합니다",
-    glow: "rgba(34, 158, 217, 0.18)",
+    glow: "rgba(34, 158, 217, 0.24)",
     num: "04",
   },
 ];
@@ -354,25 +354,31 @@ export default function Journey() {
                   className="relative flex flex-col items-center justify-center gap-7 px-6"
                   style={{ width: "84vw" }}
                 >
-                  {/* 컷별 무대 조명 — 카드 뒤 radial glow */}
+                  {/* 컷별 무대 조명 — 명시 좌표로 중앙 고정, 카드보다 충분히 커서
+                      카드가 중심을 가려도 가장자리 링이 항상 보임 */}
                   <div
                     aria-hidden="true"
                     className="absolute pointer-events-none"
                     style={{
-                      width: "min(640px, 80vw)",
-                      height: "min(640px, 80vw)",
+                      top: "46%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "min(760px, 96vw)",
+                      height: "min(760px, 96vw)",
                       borderRadius: "50%",
-                      background: `radial-gradient(circle, ${cut.glow} 0%, transparent 65%)`,
+                      background: `radial-gradient(circle, ${cut.glow} 0%, transparent 62%)`,
                     }}
                   />
-                  {/* 배경 워터마크 번호 */}
+                  {/* 배경 워터마크 번호 — 위로 올려서 숫자 상단이 카드 위로 항상 노출
+                      (컷 1처럼 키 큰 카드도 못 가리게) */}
                   <span
                     aria-hidden="true"
-                    className="absolute font-bold select-none pointer-events-none text-[160px] md:text-[260px] leading-none"
+                    className="absolute font-bold select-none pointer-events-none text-[190px] md:text-[320px] leading-none"
                     style={{
-                      color: "rgba(255,255,255,0.045)",
-                      top: "50%",
-                      transform: "translateY(-58%)",
+                      color: "rgba(255,255,255,0.055)",
+                      top: "44%",
+                      left: "50%",
+                      transform: "translate(-50%, -88%)",
                     }}
                   >
                     {cut.num}
