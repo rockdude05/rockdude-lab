@@ -5,6 +5,7 @@ import GlowBackground from "@/components/GlowBackground";
 // 📚 학습: Next.js Metadata API — app/opengraph-image.png, app/icon.svg를
 // 같은 폴더에 두면 OG 태그·파비콘 link가 자동 생성됨 (파일 규약 기반)
 export const metadata: Metadata = {
+  metadataBase: new URL("https://rockdude0512.vercel.app"),
   title: "Rockdude Lab — 공부 에이전트 작업실",
   description:
     "기말 풀이 PDF가 텔레그램으로 도착하는 경험. rockdude0512가 만드는 공부 에이전트들 — 과제풀이·공부노트·강의분석부터 학습 뷰어까지.",
