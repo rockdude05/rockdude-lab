@@ -19,10 +19,12 @@ const ACCENT_VAR = {
 } as const;
 
 // 결과 이미지 실제 픽셀 치수 — next/image width/height 필수
+// 결과 이미지는 여백 제거 + 상단 크롭(1200×935) — A4 전체를 작은 카드에 넣으면
+// 글자가 뭉개져 보여서, 여백 잘라내고 상단 콘텐츠만 보여 글자 크기를 ~1.6배 키움
 const IMAGE_DIMS: Record<string, { width: number; height: number }> = {
-  "/agents/homework/result.png": { width: 1200, height: 1696 },
-  "/agents/notes/result.png": { width: 1200, height: 1696 },
-  "/agents/analysis/result.png": { width: 1200, height: 1696 },
+  "/agents/homework/result.png": { width: 1200, height: 935 },
+  "/agents/notes/result.png": { width: 1200, height: 935 },
+  "/agents/analysis/result.png": { width: 1200, height: 935 },
 };
 
 // 애니메이션 단계 타입
@@ -161,7 +163,7 @@ export default function LiveRun() {
     (IMAGE_DIMS[activeDemo.demo.resultImage]?.height ?? 1);
   // 모바일에선 카드 축소 — 터미널 단계 텍스트를 가리지 않도록 (390px 뷰포트 검증 완료)
   const cardWidthClass = isLandscape
-    ? "w-[150px] md:w-[210px]"
+    ? "w-[160px] md:w-[230px]"
     : "w-[105px] md:w-[150px]";
   const dims = IMAGE_DIMS[activeDemo.demo.resultImage] ?? {
     width: 1200,
@@ -303,6 +305,7 @@ export default function LiveRun() {
               alt={activeDemo.demo.resultCaption}
               width={dims.width}
               height={dims.height}
+              quality={90}
               style={{ width: "100%", height: "auto", display: "block" }}
             />
           </motion.div>
