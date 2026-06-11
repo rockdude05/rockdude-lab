@@ -1,8 +1,9 @@
 // 학습 포인트: page.tsx = 서버 컴포넌트 (기본값).
 // "use client" 없음 → Next.js가 서버에서 렌더링해 HTML로 전송 → 히어로 텍스트 SEO 인덱싱 가능.
-// LiveRun만 클라이언트 컴포넌트 ("use client" 선언됨) — 인터랙션·타이머 필요.
+// LiveRun, AgentGrid는 클라이언트 컴포넌트 ("use client" 선언됨) — 인터랙션 필요.
 
 import LiveRun from "@/components/hero/LiveRun";
+import AgentGrid from "@/components/AgentGrid";
 
 export default function Home() {
   return (
@@ -45,14 +46,17 @@ export default function Home() {
         {/* 라이브 런 클라이언트 컴포넌트 */}
         <LiveRun />
 
-        {/* 푸터 힌트 */}
-        <p
-          className="text-sm text-center mt-auto"
-          style={{ color: "var(--text-dim)" }}
+        {/* 푸터 힌트 — #agents 앵커 링크, hover 시 밝아짐 (CSS .scroll-hint-link) */}
+        <a
+          href="#agents"
+          className="scroll-hint-link text-sm text-center mt-auto"
         >
           ↓ 스크롤해서 에이전트들 구경하기
-        </p>
+        </a>
       </section>
+
+      {/* 에이전트 그리드 섹션 */}
+      <AgentGrid />
     </>
   );
 }

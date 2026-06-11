@@ -90,3 +90,12 @@ body {
 .result-glow-card {
   animation: result-glow 2.5s ease-in-out infinite;
 }
+
+/* 히어로 스크롤 힌트 링크 — hover 시 텍스트 밝아짐 */
+.scroll-hint-link {
+  color: var(--text-dim);
+  transition: color 0.2s ease;
+}
+.scroll-hint-link:hover {
+  color: var(--text-main);
+}
