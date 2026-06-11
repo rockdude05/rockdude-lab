@@ -14,7 +14,9 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      {/* 히어로 섹션 — pt-14는 고정 헤더 높이만큼 보정 */}
+      {/* main 랜드마크 — 스크린리더 본문 탐색 + Lighthouse a11y */}
+      <main className="flex flex-col w-full">
+      {/* 히어로 섹션 — pt-32는 고정 헤더 높이만큼 보정 */}
       <section
         id="top"
         className="min-h-screen flex flex-col items-center justify-center max-w-5xl mx-auto px-6 w-full pt-32 pb-24 gap-8"
@@ -75,6 +77,7 @@ export default function Home() {
 
       {/* 문의 폼 섹션 */}
       <InquiryForm />
+      </main>
       <SiteFooter />
     </>
   );
