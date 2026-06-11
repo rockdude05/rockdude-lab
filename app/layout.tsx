@@ -28,10 +28,18 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <head>
-        {/* Wanted Sans Variable — 시안 3 확정 (2026-06-11 사용자 검수) */}
+        {/* 📚 학습: preconnect — 폰트 CDN과의 TLS 핸드셰이크를 미리 끝내 FCP 단축 */}
+        <link
+          rel="preconnect"
+          href="https://cdn.jsdelivr.net"
+          crossOrigin="anonymous"
+        />
+        {/* Wanted Sans Variable — 시안 3 확정 (2026-06-11 사용자 검수).
+            split(unicode-range 분할) 버전: complete는 단일 1.3MB woff2라 FCP를 죽임 —
+            split은 화면에 실제 쓰인 글자 블록만 내려받음 (Lighthouse perf 57→ 개선) */}
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/complete/WantedSansVariable.min.css"
+          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
         />
       </head>
       <body className="min-h-full flex flex-col">
