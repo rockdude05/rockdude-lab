@@ -9,11 +9,32 @@ import { useReducedMotion } from "framer-motion";
 import SectionReveal from "@/components/SectionReveal";
 
 // 4개 컷 데이터 — 내부 도구명 / 모델명 일절 제외 (스펙 §하드룰)
+// glow: 컷별 무대 조명 색 / num: 배경 워터마크 / desc: 경험 언어 한 줄
 const CUTS = [
-  { step: "① 시험지 도착" },
-  { step: "② 문제·그림 정밀 판독" },
-  { step: "③ 풀이 생성 + 자체 검증" },
-  { step: "④ 텔레그램 도착" },
+  {
+    step: "① 시험지 도착",
+    desc: "사진이든 PDF든 — 시험지 한 장이면 시작됩니다",
+    glow: "rgba(255, 196, 110, 0.14)",
+    num: "01",
+  },
+  {
+    step: "② 문제·그림 정밀 판독",
+    desc: "글자만이 아니라 구조식·그래프의 입체 정보까지 읽습니다",
+    glow: "rgba(63, 199, 123, 0.16)",
+    num: "02",
+  },
+  {
+    step: "③ 풀이 생성 + 자체 검증",
+    desc: "계산은 두 번 확인하고, 그림은 스스로 검사를 통과해야 실립니다",
+    glow: "rgba(77, 139, 255, 0.16)",
+    num: "03",
+  },
+  {
+    step: "④ 텔레그램 도착",
+    desc: "검증을 마친 풀이와 그림이 PDF로 도착합니다",
+    glow: "rgba(34, 158, 217, 0.18)",
+    num: "04",
+  },
 ];
 
 /** 컷 1: 종이 느낌의 시험지 카드 */
@@ -231,8 +252,9 @@ export default function Journey() {
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
-        gsap.to(trackRef.current, {
-          xPercent: -75,
+        // 패널 84vw + 양옆 peek 8vw: 컷 i 중앙 정렬 x = 8 - 84i (vw)
+        gsap.fromTo(trackRef.current, { x: "8vw" }, {
+          x: "-244vw",
           ease: "none",
           scrollTrigger: {
             trigger: pinRef.current,
@@ -290,6 +312,12 @@ export default function Journey() {
                 <p className="text-sm" style={{ color: "var(--text-main)" }}>
                   {cut.step}
                 </p>
+                <p
+                  className="text-sm text-center max-w-xs"
+                  style={{ color: "var(--text-dim)" }}
+                >
+                  {cut.desc}
+                </p>
               </div>
             );
           })}
@@ -301,27 +329,71 @@ export default function Journey() {
           className="relative overflow-hidden"
           style={{ height: "100vh" }}
         >
-          {/* 수평 트랙: 4 패널 × 100vw = 400vw */}
+          {/* 수평 트랙: 4 패널 × 84vw — 양옆에 이전/다음 컷이 8vw씩 살짝 보임(peek) */}
           <div
             ref={trackRef}
-            className="flex h-full"
-            style={{ width: "400%" }}
+            className="relative flex h-full"
+            style={{ width: "336vw" }}
           >
+            {/* 여정 연결선 — 네 컷을 관통하는 점선 (카드 뒤) */}
+            <div
+              aria-hidden="true"
+              className="absolute pointer-events-none"
+              style={{
+                top: "44%",
+                left: "4vw",
+                width: "328vw",
+                borderTop: "2px dashed rgba(255,255,255,0.10)",
+              }}
+            />
             {CUTS.map((cut, i) => {
               const CardComponent = CUT_CARDS[i];
               return (
                 <div
                   key={i}
-                  className="flex flex-col items-center justify-center gap-6 px-6"
-                  style={{ width: "25%" }}
+                  className="relative flex flex-col items-center justify-center gap-7 px-6"
+                  style={{ width: "84vw" }}
                 >
-                  <CardComponent />
-                  <p
-                    className="text-sm text-center"
-                    style={{ color: "var(--text-main)" }}
+                  {/* 컷별 무대 조명 — 카드 뒤 radial glow */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute pointer-events-none"
+                    style={{
+                      width: "min(640px, 80vw)",
+                      height: "min(640px, 80vw)",
+                      borderRadius: "50%",
+                      background: `radial-gradient(circle, ${cut.glow} 0%, transparent 65%)`,
+                    }}
+                  />
+                  {/* 배경 워터마크 번호 */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute font-bold select-none pointer-events-none text-[160px] md:text-[260px] leading-none"
+                    style={{
+                      color: "rgba(255,255,255,0.045)",
+                      top: "50%",
+                      transform: "translateY(-58%)",
+                    }}
                   >
-                    {cut.step}
-                  </p>
+                    {cut.num}
+                  </span>
+                  <div className="relative scale-110 md:scale-125">
+                    <CardComponent />
+                  </div>
+                  <div className="relative flex flex-col items-center gap-1.5">
+                    <p
+                      className="text-base font-semibold text-center"
+                      style={{ color: "var(--text-main)" }}
+                    >
+                      {cut.step}
+                    </p>
+                    <p
+                      className="text-sm text-center max-w-xs"
+                      style={{ color: "var(--text-dim)" }}
+                    >
+                      {cut.desc}
+                    </p>
+                  </div>
                 </div>
               );
             })}
