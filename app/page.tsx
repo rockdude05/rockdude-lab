@@ -34,7 +34,7 @@ export default function Home() {
           className="font-bold text-4xl md:text-6xl leading-tight text-center"
           style={{ color: "var(--text-main)" }}
         >
-          기말 풀이 PDF가
+          풀이도, 노트도, 분석도
           <br />
           <span
             className="bg-clip-text text-transparent"
@@ -43,15 +43,15 @@ export default function Home() {
                 "linear-gradient(135deg, var(--accent-blue), var(--accent-purple))",
             }}
           >
-            텔레그램으로 도착
-          </span>
-          하는 경험
+            내 손 안에
+          </span>{" "}
+          도착하는 경험
         </h1>
 
         {/* 서브 카피 */}
         <p className="text-center max-w-xl" style={{ color: "var(--text-dim)" }}>
-          명령 한 줄이면 검증을 거친 풀이·그림·분석이 도착합니다. 아래에서 직접
-          실행해보세요.
+          기말 풀이부터 논문 분석까지 — 명령 한 줄이면 검증을 거친 결과물이
+          텔레그램으로 도착합니다. 아래에서 직접 실행해보세요.
         </p>
 
         {/* 라이브 런 클라이언트 컴포넌트 */}

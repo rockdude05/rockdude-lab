@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://rockdude0512.vercel.app"),
   title: "Rockdude Lab — 공부 에이전트 작업실",
   description:
-    "기말 풀이 PDF가 텔레그램으로 도착하는 경험. rockdude0512가 만드는 공부 에이전트들 — 과제풀이·공부노트·강의분석부터 학습 뷰어까지.",
+    "풀이도, 노트도, 분석도 — 내 손 안에 도착하는 경험. rockdude0512가 만드는 공부 에이전트들 — 과제풀이·공부노트·강의분석부터 학습 뷰어까지.",
   openGraph: {
     title: "Rockdude Lab — 공부 에이전트 작업실",
     description:
-      "기말 풀이 PDF가 텔레그램으로 도착하는 경험. 명령 한 줄이면 검증을 거친 풀이·그림·분석이 도착합니다.",
+      "풀이도, 노트도, 분석도 — 내 손 안에 도착하는 경험. 기말 풀이부터 논문 분석까지, 명령 한 줄이면 검증을 거친 결과물이 텔레그램으로 도착합니다.",
     locale: "ko_KR",
     type: "website",
     siteName: "Rockdude Lab",
