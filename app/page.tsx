@@ -1,65 +1,58 @@
-import Image from "next/image";
+// 학습 포인트: page.tsx = 서버 컴포넌트 (기본값).
+// "use client" 없음 → Next.js가 서버에서 렌더링해 HTML로 전송 → 히어로 텍스트 SEO 인덱싱 가능.
+// LiveRun만 클라이언트 컴포넌트 ("use client" 선언됨) — 인터랙션·타이머 필요.
+
+import LiveRun from "@/components/hero/LiveRun";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      {/* 히어로 섹션 */}
+      <section className="min-h-screen flex flex-col items-center justify-center max-w-5xl mx-auto px-6 w-full py-24 gap-8">
+        {/* 아이브로우 */}
+        <p
+          className="text-sm tracking-widest uppercase"
+          style={{ color: "var(--text-dim)" }}
+        >
+          rockdude0512가 만드는 공부 에이전트들
+        </p>
+
+        {/* H1 */}
+        <h1
+          className="font-bold text-4xl md:text-6xl leading-tight text-center"
+          style={{ color: "var(--text-main)" }}
+        >
+          기말 풀이 PDF가
+          <br />
+          <span
+            className="bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                "linear-gradient(135deg, var(--accent-blue), var(--accent-purple))",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            텔레그램으로 도착
+          </span>
+          하는 경험
+        </h1>
+
+        {/* 서브 카피 */}
+        <p className="text-center max-w-xl" style={{ color: "var(--text-dim)" }}>
+          명령 한 줄이면 검증을 거친 풀이·그림·분석이 도착합니다. 아래에서 직접
+          실행해보세요.
+        </p>
+
+        {/* 라이브 런 클라이언트 컴포넌트 */}
+        <LiveRun />
+
+        {/* 푸터 힌트 */}
+        <p
+          className="text-sm text-center mt-auto"
+          style={{ color: "var(--text-dim)" }}
+        >
+          ↓ 스크롤해서 에이전트들 구경하기
+        </p>
+      </section>
+    </>
   );
 }

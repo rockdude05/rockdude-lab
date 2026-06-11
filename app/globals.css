@@ -47,3 +47,24 @@ body {
   60%  { transform: translate(-6vw,  2vw); }
   100% { transform: translate(0,    0); }
 }
+
+/* LiveRun 터미널 — 블록 커서 깜빡임 */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 0.9s step-end infinite;
+}
+
+/* LiveRun 결과 아티팩트 — accent 색상 글로우 펄스 */
+/* --glow-color 는 인라인 스타일로 주입됨 */
+@keyframes result-glow {
+  0%, 100% { box-shadow: 0 0 18px var(--glow-color, #4d8bff); }
+  50%       { box-shadow: 0 0 38px var(--glow-color, #4d8bff); }
+}
+
+.result-glow-card {
+  animation: result-glow 2.5s ease-in-out infinite;
+}
