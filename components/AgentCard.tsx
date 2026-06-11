@@ -129,13 +129,24 @@ export default function AgentCard({ agent }: AgentCardProps) {
 
         {/* 2. 바디 — p-5 */}
         <div className="p-5 flex flex-col gap-2">
-          {/* 첫 번째 행: 이름 + 상태 배지 */}
+          {/* 첫 번째 행: (앱 로고) + 이름 + 상태 배지 */}
           <div className="flex items-center justify-between gap-2">
-            <span
-              className="font-mono text-base font-semibold truncate"
-              style={{ color: "var(--text-main)" }}
-            >
-              {agent.name}
+            <span className="flex items-center gap-2 min-w-0">
+              {agent.icon && (
+                <Image
+                  src={agent.icon}
+                  alt=""
+                  width={22}
+                  height={22}
+                  className="rounded-[6px] shrink-0"
+                />
+              )}
+              <span
+                className="font-mono text-base font-semibold truncate"
+                style={{ color: "var(--text-main)" }}
+              >
+                {agent.name}
+              </span>
             </span>
             <span
               className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-mono"

@@ -19,6 +19,7 @@ export type Agent = {
   accent: "blue" | "green" | "orange" | "purple";
   image: string;
   status: "live" | "beta";
+  icon?: string; // 앱 로고 (있으면 카드 이름 옆에 표시 — 앱 카테고리용)
   demo?: AgentDemo;
 };
 
@@ -140,6 +141,7 @@ export const AGENTS: Agent[] = [
     accent: "orange",
     image: "/agents/cogva/card.png",
     status: "live",
+    icon: "/agents/cogva/icon.png",
   },
 ];
 

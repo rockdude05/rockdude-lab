@@ -59,6 +59,7 @@ npm test      # Vitest 유닛 테스트
   accent: "blue",            // "blue" | "green" | "orange" | "purple"
   image: "/agents/my-agent/card.png",
   status: "live",            // "live" | "beta"
+  icon: "/agents/my-agent/icon.png", // 선택 — 앱 로고 (카드 이름 옆 표시)
   demo: {                    // 선택 — 있으면 히어로 칩 자동 등장
     command: "/my-agent 예시 명령",
     steps: [
