@@ -7,11 +7,16 @@ const schema = z.object({
   body: z.string().min(10).max(4000),
   website: z.string(), // 📚 학습: honeypot — 사람 눈엔 안 보이는 필드, 봇만 채움
 });
-export type Inquiry = z.infer<typeof schema>;
+// 📚 학습: honeypot은 검증에만 쓰고 반환 데이터에서 제거 —
+// DB 테이블에 없는 컬럼(website)을 insert하면 PostgREST가 거부하므로
+// parse 단계에서 떼어내야 라우트가 parsed.data를 그대로 insert할 수 있음.
+export type Inquiry = Omit<z.infer<typeof schema>, "website">;
 export type ParseResult = { ok: true; data: Inquiry } | { ok: false; reason: "honeypot" | "invalid" };
 export function parseInquiry(raw: unknown): ParseResult {
   const p = schema.safeParse(raw);
   if (!p.success) return { ok: false, reason: "invalid" };
   if (p.data.website.trim() !== "") return { ok: false, reason: "honeypot" };
-  return { ok: true, data: p.data };
+  const { website: _website, ...data } = p.data;
+  void _website;
+  return { ok: true, data };
 }

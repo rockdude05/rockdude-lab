@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import GlowBackground from "@/components/GlowBackground";
+import MotionProvider from "@/components/MotionProvider";
 
 // 📚 학습: Next.js Metadata API — app/opengraph-image.png, app/icon.svg를
 // 같은 폴더에 두면 OG 태그·파비콘 link가 자동 생성됨 (파일 규약 기반)
@@ -34,8 +35,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <GlowBackground />
-        {children}
+        <MotionProvider>
+          <GlowBackground />
+          {children}
+        </MotionProvider>
       </body>
     </html>
   );

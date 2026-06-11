@@ -8,13 +8,26 @@
 // document.cookie로는 httpOnly 쿠키를 읽을 수 없어서 악성 스크립트가 토큰을 훔칠 수 없음.
 // 서버로 요청할 때 브라우저가 자동으로 헤더에 포함시키는 방식으로만 동작.
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { sign, verify } from "@/lib/admin-auth";
 import { getSupabase } from "@/lib/supabase";
+import { createRateLimiter } from "@/lib/rate-limit";
+
+const STATUSES = ["new", "review", "building", "done"] as const;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// 로그인 무차별 대입 방지 — IP당 5회/15분
+const loginLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60_000 });
 
 export async function login(formData: FormData) {
+  const hdrs = await headers();
+  const ip = hdrs.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  if (!loginLimiter.check(ip)) {
+    redirect("/admin?error=1");
+  }
+
   const password = formData.get("password") as string;
   const adminPassword = process.env.ADMIN_PASSWORD;
   const adminSecret = process.env.ADMIN_SECRET;
@@ -44,9 +57,21 @@ export async function updateStatus(formData: FormData) {
     redirect("/admin");
   }
 
-  const id = formData.get("id") as string;
-  const status = formData.get("status") as string;
+  // 📚 학습: Server Action 입력도 신뢰 금지 — 폼을 우회해 임의 값으로 호출 가능하므로
+  // id(UUID)·status(화이트리스트)를 서버에서 다시 검증한다.
+  const id = formData.get("id");
+  const status = formData.get("status");
+  if (typeof id !== "string" || !UUID_RE.test(id)) return;
+  if (
+    typeof status !== "string" ||
+    !STATUSES.includes(status as (typeof STATUSES)[number])
+  )
+    return;
 
-  await getSupabase().from("inquiries").update({ status }).eq("id", id);
+  const { error } = await getSupabase()
+    .from("inquiries")
+    .update({ status })
+    .eq("id", id);
+  if (error) console.error("[admin] status 업데이트 실패:", error.message);
   revalidatePath("/admin");
 }

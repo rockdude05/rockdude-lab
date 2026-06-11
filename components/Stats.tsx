@@ -22,16 +22,23 @@ function easeOutCubic(t: number): number {
  */
 function useCountUp(target: number, started: boolean): number {
   const prefersReduced = useReducedMotion();
-  const [count, setCount] = useState(prefersReduced ? target : 0);
+  // SSR과 클라이언트 첫 렌더를 0으로 일치 (hydration mismatch 방지)
+  const [count, setCount] = useState(0);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const DURATION = 1200; // ms
 
   useEffect(() => {
-    // reduced motion: useState 초기값으로 이미 target 세팅됨 — 효과 내 setCount 생략
-    if (prefersReduced) return;
     // 아직 시작 신호가 없으면 대기
     if (!started) return;
+
+    // reduced motion: 카운트업 없이 rAF 1회로 최종값 점프 (비동기 콜백 — lint 허용)
+    if (prefersReduced) {
+      rafRef.current = requestAnimationFrame(() => setCount(target));
+      return () => {
+        if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      };
+    }
 
     // 이전 rAF 취소
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);

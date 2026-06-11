@@ -4,7 +4,7 @@
 // gsap.context()로 클린업을 보장하고, ctx.revert()로 ScrollTrigger 인스턴스를 제거.
 // useReducedMotion 감지 시 GSAP 완전 건너뛰고 수직 스택 레이아웃으로 폴백.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -190,8 +190,22 @@ function CutTelegram() {
 
 const CUT_CARDS = [CutExam, CutRead, CutSolve, CutTelegram];
 
+// 📚 학습: useSyncExternalStore로 만든 lint-safe "mounted" 감지 —
+// 서버 스냅샷 false, 클라이언트 스냅샷 true → effect 없이 하이드레이션 후 1회 재렌더.
+function useMounted(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 export default function Journey() {
   const prefersReduced = useReducedMotion();
+  // SSR에선 reduced 여부를 모름(null) → 항상 핀 레이아웃으로 hydrate하고,
+  // 마운트 후 reduced 사용자만 수직 스택으로 전환 (hydration mismatch 방지)
+  const mounted = useMounted();
+  const reduced = mounted && prefersReduced === true;
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -251,7 +265,7 @@ export default function Journey() {
       </SectionReveal>
 
       {/* 핀 래퍼 — reduced motion 시 일반 섹션으로 폴백 */}
-      {prefersReduced ? (
+      {reduced ? (
         // 접근성 폴백: 수직 스택 레이아웃
         <div className="max-w-6xl mx-auto px-6 pb-24 flex flex-col gap-12 items-center">
           {CUTS.map((cut, i) => {

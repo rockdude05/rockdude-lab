@@ -46,16 +46,12 @@ export default function LiveRun() {
   const steps = activeDemo.demo.steps;
   const accentVar = ACCENT_VAR[activeDemo.accent];
 
-  // reduced motion: 렌더링 시점에 최종 상태로 초기화 (effect 아님)
-  const [phase, setPhase] = useState<Phase>(() =>
-    prefersReduced ? "done" : "typing",
-  );
-  const [typedCount, setTypedCount] = useState(() =>
-    prefersReduced ? command.length : 0,
-  );
-  const [visibleSteps, setVisibleSteps] = useState(() =>
-    prefersReduced ? steps.length : 0,
-  );
+  // 📚 학습: SSR에서는 useReducedMotion()이 null이라 reduced 여부를 알 수 없음.
+  // 서버/클라이언트 첫 렌더를 항상 "typing"으로 일치시키고(hydration mismatch 방지),
+  // reduced 사용자는 typing 효과에서 즉시 최종 상태로 점프시킨다.
+  const [phase, setPhase] = useState<Phase>("typing");
+  const [typedCount, setTypedCount] = useState(0);
+  const [visibleSteps, setVisibleSteps] = useState(0);
 
   // 타이머 refs — cleanup 용
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -99,7 +95,17 @@ export default function LiveRun() {
   // ─── 타이핑 시퀀스 ─────────────────────────────────────────────────────────
   // phase === "typing" 이면서 activeIdx/runId 변경 시 실행
   useEffect(() => {
-    if (prefersReduced || phase !== "typing") return;
+    if (phase !== "typing") return;
+
+    // reduced motion: 타이핑 생략, 최종 상태로 즉시 점프 (비동기 콜백이라 lint 허용)
+    if (prefersReduced) {
+      addTimer(() => {
+        setPhase("done");
+        setTypedCount(command.length);
+        setVisibleSteps(steps.length);
+      }, 0);
+      return;
+    }
 
     let charIdx = 0;
     const typeInterval = setInterval(() => {
@@ -119,7 +125,7 @@ export default function LiveRun() {
       clearInterval(typeInterval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, activeIdx, runId]);
+  }, [phase, activeIdx, runId, prefersReduced]);
 
   // ─── 단계 표시 ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -179,6 +185,7 @@ export default function LiveRun() {
             <button
               key={agent.id}
               onClick={() => switchDemo(i)}
+              aria-pressed={isActive}
               className="font-mono text-sm rounded-full px-4 py-1.5 border transition-all cursor-pointer"
               style={
                 isActive

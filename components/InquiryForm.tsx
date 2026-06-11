@@ -187,6 +187,7 @@ export default function InquiryForm() {
                     id="inq-name"
                     type="text"
                     required
+                    maxLength={40}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="이름 또는 별명"
@@ -214,6 +215,7 @@ export default function InquiryForm() {
                   <input
                     id="inq-contact"
                     type="text"
+                    maxLength={120}
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
                     placeholder="카톡 ID · 이메일 · 텔레그램 등"
@@ -242,6 +244,7 @@ export default function InquiryForm() {
                     id="inq-body"
                     required
                     rows={5}
+                    maxLength={4000}
                     value={body}
                     onChange={(e) => {
                       setBody(e.target.value);
@@ -266,17 +269,19 @@ export default function InquiryForm() {
                   )}
                 </div>
 
-                {/* 에러 메시지 */}
-                {status === "ratelimit" && (
-                  <p className="text-sm" style={{ color: "var(--accent-orange)" }}>
-                    요청이 너무 잦아요 — 10분 뒤에 다시 시도해주세요.
-                  </p>
-                )}
-                {status === "error" && (
-                  <p className="text-sm" style={{ color: "var(--accent-orange)" }}>
-                    전송에 문제가 생겼어요. 잠시 후 다시 시도해주세요.
-                  </p>
-                )}
+                {/* 에러 메시지 — aria-live로 스크린리더에도 즉시 안내 */}
+                <div aria-live="polite" role="status">
+                  {status === "ratelimit" && (
+                    <p className="text-sm" style={{ color: "var(--accent-orange)" }}>
+                      요청이 너무 잦아요 — 10분 뒤에 다시 시도해주세요.
+                    </p>
+                  )}
+                  {status === "error" && (
+                    <p className="text-sm" style={{ color: "var(--accent-orange)" }}>
+                      전송에 문제가 생겼어요. 잠시 후 다시 시도해주세요.
+                    </p>
+                  )}
+                </div>
 
                 {/* 제출 버튼 */}
                 <button

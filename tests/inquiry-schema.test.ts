@@ -25,4 +25,9 @@ describe("parseInquiry", () => {
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.data.contact).toBe("");
   });
+  it("반환 데이터에 honeypot(website) 키 없음 — DB insert 형태와 일치", () => {
+    const r = parseInquiry({ type: "try", name: "친구", contact: "", body: "에이전트 한번 써보고 싶어요!", website: "" });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect("website" in r.data).toBe(false);
+  });
 });
