@@ -215,6 +215,8 @@ export default function Journey() {
           pin: true,
           scrub: 1,
           end: "+=2400",
+          // 스크롤을 멈추면 가장 가까운 컷 중앙으로 부드럽게 정착
+          snap: { snapTo: 1 / 3, duration: 0.4, ease: "power1.inOut" },
           onUpdate: (self) => {
             // 진행도(0~1)를 4개 컷 인덱스로 변환
             const idx = Math.min(3, Math.floor(self.progress * 4));
