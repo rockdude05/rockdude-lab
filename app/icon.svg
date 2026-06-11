@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 글로우 모티프 파비콘: 다크 바탕 + 보라-파랑 글로우 + 모노 r. -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.9"/>
+      <stop offset="55%" stop-color="#4d8bff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0b0a14" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0b0a14"/>
+  <circle cx="32" cy="27" r="26" fill="url(#glow)"/>
+  <text x="32" y="44" text-anchor="middle" font-family="Menlo, ui-monospace, monospace" font-size="30" font-weight="700" fill="#ece9f4">r<tspan fill="#6c63ff">.</tspan></text>
+</svg>
