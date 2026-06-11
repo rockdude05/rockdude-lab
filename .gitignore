@@ -43,3 +43,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .gstack/
+
+# 내부 설계 문서 — 공개 repo 미포함 (스펙 §4 카피 보호)
+docs/
+.superpowers/
