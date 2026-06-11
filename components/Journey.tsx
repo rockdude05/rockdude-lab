@@ -6,8 +6,6 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SectionReveal from "@/components/SectionReveal";
 
 // 4개 컷 데이터 — 내부 도구명 / 모델명 일절 제외 (스펙 §하드룰)
@@ -215,32 +213,48 @@ export default function Journey() {
   // 생성된 모든 ScrollTrigger + 트윈을 한 번에 정리 (메모리 누수 방지).
   // scrub:1 = 스크롤 위치와 1초 부드러움으로 애니메이션 동기화.
   // end:"+=2400" = 핀 상태에서 2400px 추가 스크롤 후 언핀.
+  // 📚 학습: GSAP 동적 import — 초기 JS 번들에서 gsap(~30KB gz)을 분리.
+  // Journey는 below-the-fold라 hydration 후 로드해도 체감 차이 없음 (Lighthouse perf 개선).
   useEffect(() => {
     if (prefersReduced) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    let ctx: { revert: () => void } | null = null;
+    let cancelled = false;
 
-    const ctx = gsap.context(() => {
-      gsap.to(trackRef.current, {
-        xPercent: -75,
-        ease: "none",
-        scrollTrigger: {
-          trigger: pinRef.current,
-          pin: true,
-          scrub: 1,
-          end: "+=2400",
-          // 스크롤을 멈추면 가장 가까운 컷 중앙으로 부드럽게 정착
-          snap: { snapTo: 1 / 3, duration: 0.4, ease: "power1.inOut" },
-          onUpdate: (self) => {
-            // 진행도(0~1)를 4개 컷 인덱스로 변환
-            const idx = Math.min(3, Math.floor(self.progress * 4));
-            setActiveIndex(idx);
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (cancelled) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      ctx = gsap.context(() => {
+        gsap.to(trackRef.current, {
+          xPercent: -75,
+          ease: "none",
+          scrollTrigger: {
+            trigger: pinRef.current,
+            pin: true,
+            scrub: 1,
+            end: "+=2400",
+            // 스크롤을 멈추면 가장 가까운 컷 중앙으로 부드럽게 정착
+            snap: { snapTo: 1 / 3, duration: 0.4, ease: "power1.inOut" },
+            onUpdate: (self) => {
+              // 진행도(0~1)를 4개 컷 인덱스로 변환
+              const idx = Math.min(3, Math.floor(self.progress * 4));
+              setActiveIndex(idx);
+            },
           },
-        },
+        });
       });
-    });
+    })();
 
-    return () => ctx.revert();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
   }, [prefersReduced]);
 
   return (
