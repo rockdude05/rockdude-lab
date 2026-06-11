@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  /* 📚 학습: CSS 변수로 토큰화하면 무드 전환이 이 블록 수정만으로 끝남 */
-  --bg-base: #0a0d18;
-  --bg-panel: #11163a;
-  --text-main: #e6edf3;
-  --text-dim: #7d8590;
+  /* 📚 학습: CSS 변수로 토큰화하면 무드 전환이 이 블록 수정만으로 끝남
+     2026-06-11 사용자 검수: 바이올렛 틴트 무드(시안 3) 확정 */
+  --bg-base: #0b0a14;
+  --bg-panel: #13111f;
+  --text-main: #ece9f4;
+  --text-dim: #9089a8;
   --accent-blue: #4d8bff;
   --accent-green: #3fc77b;
   --accent-orange: #ff8a3d;
@@ -22,7 +23,28 @@
 body {
   background: var(--bg-base);
   color: var(--text-main);
-  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: "Wanted Sans Variable", "Wanted Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* CTA 공용 클래스 — 글래스 + 그라데이션 보더 (2026-06-11 사용자 검수 확정)
+   📚 학습: 이중 background + background-clip 트릭 — padding-box엔 유리 바탕,
+   border-box엔 그라데이션을 깔고 border를 투명하게 → 1px 그라데이션 테두리 */
+.cta-glass {
+  background:
+    linear-gradient(rgba(19, 17, 31, 0.85), rgba(19, 17, 31, 0.85)) padding-box,
+    linear-gradient(135deg, var(--accent-blue), var(--accent-purple)) border-box;
+  border: 1px solid transparent;
+  box-shadow:
+    0 0 28px rgba(77, 139, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.cta-glass:hover {
+  box-shadow:
+    0 0 44px rgba(108, 99, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
 }
 
 /* GlowBackground 키프레임 — globals에 정의해 두면 서버 컴포넌트에서도 참조 가능 */

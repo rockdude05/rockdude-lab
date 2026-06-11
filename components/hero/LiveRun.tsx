@@ -243,8 +243,8 @@ export default function LiveRun() {
 
           {/* 터미널 콘텐츠 — 최소 높이로 레이아웃 점프 방지 */}
           <div className="px-5 py-4 min-h-[260px] flex flex-col gap-3">
-            {/* 타이핑 라인 */}
-            <div className="font-mono text-sm flex items-center gap-0">
+            {/* 타이핑 라인 — flex 금지: 모바일에서 명령이 줄바꿈돼도 $가 첫 줄에 붙도록 인라인 플로우 */}
+            <div className="font-mono text-sm">
               <span style={{ color: "var(--accent-green)" }}>$ </span>
               <span style={{ color: "var(--text-main)" }}>
                 {command.slice(0, typedCount)}
@@ -333,11 +333,7 @@ export default function LiveRun() {
         >
           <a
             href="#inquiry"
-            className="rounded-full px-6 py-3 font-semibold text-white transition-all hover:brightness-110"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--accent-blue), var(--accent-purple))",
-            }}
+            className="cta-glass rounded-full px-6 py-3 font-semibold"
           >
             나도 써보기 — 문의하기
           </a>
