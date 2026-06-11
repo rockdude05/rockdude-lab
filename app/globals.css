@@ -20,6 +20,16 @@
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
+/* 📚 학습: scroll-padding-top — 고정 헤더 높이만큼 앵커 착지점을 내려줌 */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 body {
   background: var(--bg-base);
   color: var(--text-main);

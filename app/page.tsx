@@ -7,12 +7,18 @@ import AgentGrid from "@/components/AgentGrid";
 import Journey from "@/components/Journey";
 import Stats from "@/components/Stats";
 import InquiryForm from "@/components/InquiryForm";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function Home() {
   return (
     <>
-      {/* 히어로 섹션 */}
-      <section className="min-h-screen flex flex-col items-center justify-center max-w-5xl mx-auto px-6 w-full py-24 gap-8">
+      <SiteHeader />
+      {/* 히어로 섹션 — pt-14는 고정 헤더 높이만큼 보정 */}
+      <section
+        id="top"
+        className="min-h-screen flex flex-col items-center justify-center max-w-5xl mx-auto px-6 w-full pt-32 pb-24 gap-8"
+      >
         {/* 아이브로우 */}
         <p
           className="text-sm tracking-widest uppercase"
@@ -69,6 +75,7 @@ export default function Home() {
 
       {/* 문의 폼 섹션 */}
       <InquiryForm />
+      <SiteFooter />
     </>
   );
 }
