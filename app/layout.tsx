@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./fonts.css";
 import GlowBackground from "@/components/GlowBackground";
 import MotionProvider from "@/components/MotionProvider";
 
@@ -35,12 +36,8 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         {/* Wanted Sans Variable — 시안 3 확정 (2026-06-11 사용자 검수).
-            split(unicode-range 분할) 버전: complete는 단일 1.3MB woff2라 FCP를 죽임 —
-            split은 화면에 실제 쓰인 글자 블록만 내려받음 (Lighthouse perf 57→ 개선) */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"
-        />
+            📚 학습: @font-face CSS는 app/fonts.css로 인라인(same-origin 번들) —
+            교차 출처 렌더 차단 체인 제거. woff2 청크만 CDN에서 unicode-range로 필요한 만큼 로드 */}
       </head>
       <body className="min-h-full flex flex-col">
         <MotionProvider>
