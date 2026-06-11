@@ -76,14 +76,14 @@ export const AGENTS: Agent[] = [
     image: "/agents/analysis/card.png",
     status: "live",
     demo: {
-      command: "/course-analyzer 석유가스공학 Drawdown Test",
+      command: "/course-analyzer 유기화학1 1,2- vs 1,4-addition",
       steps: [
         { label: "수업자료에서 해당 범위 정독", delayMs: 900 },
-        { label: "개념 설명 — 출처 페이지 표기", delayMs: 1800 },
-        { label: "분석 PDF 생성", delayMs: 2500 },
+        { label: "에너지 도표·구조 그림 생성 — 검증 통과", delayMs: 1800 },
+        { label: "출처 페이지까지 표기해 정리", delayMs: 2600 },
       ],
       resultImage: "/agents/analysis/result.png",
-      resultCaption: "개념 분석 PDF — Telegram 도착",
+      resultCaption: "개념 분석 PDF 5쪽 — Telegram 도착",
     },
   },
   {
