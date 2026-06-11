@@ -24,6 +24,8 @@ export default function InquiryForm() {
   const [website, setWebsite] = useState(""); // honeypot
   const [status, setStatus] = useState<Status>("idle");
   const [bodyHint, setBodyHint] = useState(false);
+  const [accessCode, setAccessCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +46,10 @@ export default function InquiryForm() {
       if (res.status === 429) {
         setStatus("ratelimit");
       } else if (res.ok) {
+        const json = await res.json().catch(() => ({}));
+        if (typeof json.code === "string" && json.code.length > 0) {
+          setAccessCode(json.code);
+        }
         setStatus("success");
       } else {
         setStatus("error");
@@ -98,7 +104,7 @@ export default function InquiryForm() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col gap-2 py-8 items-center text-center"
+                className="flex flex-col gap-4 py-8 items-center text-center"
               >
                 <p
                   className="text-xl font-semibold"
@@ -109,6 +115,51 @@ export default function InquiryForm() {
                 <p className="text-sm" style={{ color: "var(--text-dim)" }}>
                   보통 하루 안에 답합니다.
                 </p>
+                {accessCode && (
+                  <div className="flex flex-col gap-3 items-center w-full mt-2">
+                    <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+                      답변 조회코드
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="font-mono text-2xl rounded-lg px-5 py-3"
+                        style={{
+                          letterSpacing: "0.3em",
+                          color: "var(--text-main)",
+                          background: "rgba(255,255,255,0.05)",
+                        }}
+                      >
+                        {accessCode}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(accessCode).then(() => {
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1500);
+                          });
+                        }}
+                        className="text-sm rounded-lg px-3 py-2 transition-colors"
+                        style={{
+                          background: "rgba(255,255,255,0.06)",
+                          color: "var(--text-dim)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                        }}
+                      >
+                        {copied ? "복사됨 ✓" : "복사"}
+                      </button>
+                    </div>
+                    <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+                      이 코드로 답변을 확인할 수 있어요 — 잃어버리면 다시 문의해주세요.
+                    </p>
+                    <a
+                      href={`/check?code=${accessCode}`}
+                      className="cta-glass rounded-full px-5 py-2.5 text-sm"
+                    >
+                      답변 확인하러 가기 →
+                    </a>
+                  </div>
+                )}
               </motion.div>
             ) : (
               <motion.form
@@ -291,6 +342,13 @@ export default function InquiryForm() {
                 >
                   {status === "sending" ? "보내는 중…" : "보내기"}
                 </button>
+                <a
+                  href="/check"
+                  className="text-sm self-start"
+                  style={{ color: "var(--text-dim)" }}
+                >
+                  이미 문의하셨나요? 답변 확인 →
+                </a>
               </motion.form>
             )}
           </AnimatePresence>

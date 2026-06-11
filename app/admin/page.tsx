@@ -8,7 +8,7 @@
 
 import { cookies } from "next/headers";
 import { verify } from "@/lib/admin-auth";
-import { login, updateStatus } from "@/app/admin/actions";
+import { login, updateStatus, publishReply } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +23,9 @@ interface Inquiry {
   contact: string;
   body: string;
   status: InquiryStatus;
+  access_code?: string | null;
+  reply?: string | null;
+  replied_at?: string | null;
 }
 
 function formatDate(iso: string): string {
@@ -209,6 +212,14 @@ export default async function AdminPage({
                         {inq.contact}
                       </span>
                     )}
+                    {inq.access_code && (
+                      <span
+                        className="text-xs font-mono"
+                        style={{ color: "var(--text-dim)" }}
+                      >
+                        {inq.access_code}
+                      </span>
+                    )}
                   </div>
                   <p
                     className="text-sm whitespace-pre-wrap"
@@ -246,6 +257,53 @@ export default async function AdminPage({
                       변경
                     </button>
                   </form>
+                  <details className="flex flex-col gap-2">
+                    <summary
+                      className="text-sm cursor-pointer select-none"
+                      style={{ color: "var(--text-dim)" }}
+                    >
+                      답변{" "}
+                      {inq.reply
+                        ? `(발행됨 ${inq.replied_at ? formatDate(inq.replied_at) : ""})`
+                        : "(미발행)"}
+                    </summary>
+                    <form
+                      action={publishReply}
+                      className="flex flex-col gap-2 mt-2"
+                    >
+                      <input type="hidden" name="id" value={inq.id} />
+                      <textarea
+                        name="reply"
+                        rows={4}
+                        defaultValue={inq.reply ?? ""}
+                        className="rounded-lg p-3 text-sm outline-none resize-none w-full"
+                        style={{
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          color: "var(--text-main)",
+                        }}
+                      />
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="submit"
+                          className="text-sm rounded-lg px-3 py-1.5 transition-colors"
+                          style={{
+                            background: "rgba(255,255,255,0.06)",
+                            color: "var(--text-main)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                          }}
+                        >
+                          발행
+                        </button>
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--text-dim)" }}
+                        >
+                          빈 칸으로 발행하면 답변이 내려갑니다
+                        </span>
+                      </div>
+                    </form>
+                  </details>
                 </div>
               ))}
             </div>

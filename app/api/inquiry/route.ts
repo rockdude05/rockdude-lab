@@ -3,6 +3,7 @@ import { parseInquiry } from "@/lib/inquiry-schema";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { getSupabase } from "@/lib/supabase";
 import { sendTelegram } from "@/lib/telegram";
+import { generateAccessCode } from "@/lib/access-code";
 
 const limiter = createRateLimiter({ limit: 5, windowMs: 10 * 60_000 });
 
@@ -16,12 +17,34 @@ export async function POST(req: NextRequest) {
       ? NextResponse.json({ ok: true })
       : NextResponse.json({ ok: false }, { status: 400 });
   }
+
+  let access_code = generateAccessCode();
+  let insertError: { code?: string; message?: string } | null = null;
+
   try {
-    const { error } = await getSupabase().from("inquiries").insert(parsed.data);
-    if (error) return NextResponse.json({ ok: false }, { status: 500 });
+    const result = await getSupabase()
+      .from("inquiries")
+      .insert({ ...parsed.data, access_code });
+    insertError = result.error;
+
+    // unique 충돌 시 1회 재시도
+    if (
+      insertError &&
+      (insertError.code === "23505" ||
+        insertError.message?.toLowerCase().includes("duplicate"))
+    ) {
+      access_code = generateAccessCode();
+      const retry = await getSupabase()
+        .from("inquiries")
+        .insert({ ...parsed.data, access_code });
+      insertError = retry.error;
+    }
+
+    if (insertError) return NextResponse.json({ ok: false }, { status: 500 });
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 });
   }
+
   await sendTelegram(`💌 새 문의 [${parsed.data.type}] ${parsed.data.name}\n${parsed.data.body.slice(0, 300)}`);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, code: access_code });
 }

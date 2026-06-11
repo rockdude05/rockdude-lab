@@ -75,3 +75,33 @@ export async function updateStatus(formData: FormData) {
   if (error) console.error("[admin] status 업데이트 실패:", error.message);
   revalidatePath("/admin");
 }
+
+export async function publishReply(formData: FormData) {
+  const adminSecret = process.env.ADMIN_SECRET ?? "";
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_token")?.value ?? "";
+
+  if (!verify(token, adminSecret)) {
+    redirect("/admin");
+  }
+
+  const id = formData.get("id");
+  if (typeof id !== "string" || !UUID_RE.test(id)) return;
+
+  const replyRaw = formData.get("reply");
+  const reply = typeof replyRaw === "string" ? replyRaw.trim() : "";
+
+  if (reply.length > 4000) return;
+
+  const updatePayload =
+    reply.length === 0
+      ? { reply: "", replied_at: null }
+      : { reply, replied_at: new Date().toISOString() };
+
+  const { error } = await getSupabase()
+    .from("inquiries")
+    .update(updatePayload)
+    .eq("id", id);
+  if (error) console.error("[admin] reply 업데이트 실패:", error.message);
+  revalidatePath("/admin");
+}
