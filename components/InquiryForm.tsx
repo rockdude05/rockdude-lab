@@ -72,7 +72,7 @@ export default function InquiryForm() {
         <motion.div variants={revealItem} className="flex flex-col gap-3">
           <p
             className="font-mono text-sm tracking-widest"
-            style={{ color: "var(--accent-orange)" }}
+            style={{ color: "var(--accent-blue)" }}
           >
             ~/inquiry
           </p>
@@ -206,10 +206,10 @@ export default function InquiryForm() {
                             style={
                               isSelected
                                 ? {
-                                    borderColor: "var(--accent-orange)",
-                                    color: "var(--accent-orange)",
+                                    borderColor: "var(--accent-blue)",
+                                    color: "var(--accent-blue)",
                                     background:
-                                      "color-mix(in srgb, var(--accent-orange) 12%, transparent)",
+                                      "color-mix(in srgb, var(--accent-blue) 12%, transparent)",
                                   }
                                 : {
                                     borderColor: "rgba(255,255,255,0.12)",
@@ -245,7 +245,7 @@ export default function InquiryForm() {
                     className="rounded-lg px-4 py-3 text-sm outline-none transition-all"
                     style={inputStyle}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-orange)";
+                      e.currentTarget.style.borderColor = "var(--accent-blue)";
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor =
@@ -273,7 +273,7 @@ export default function InquiryForm() {
                     className="rounded-lg px-4 py-3 text-sm outline-none transition-all"
                     style={inputStyle}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-orange)";
+                      e.currentTarget.style.borderColor = "var(--accent-blue)";
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor =
@@ -306,7 +306,7 @@ export default function InquiryForm() {
                     className="rounded-lg px-4 py-3 text-sm outline-none transition-all resize-none"
                     style={inputStyle}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-orange)";
+                      e.currentTarget.style.borderColor = "var(--accent-blue)";
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor =

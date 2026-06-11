@@ -113,8 +113,10 @@ export default function AgentGrid() {
         </div>
       )}
 
-      {/* 에이전트 그리드 */}
+      {/* 에이전트 그리드 — key={selected}: 필터 변경 시 리마운트해서
+          stagger 등장 애니메이션을 다시 재생 (once:true 상태 고착 방지) */}
       <motion.div
+        key={selected}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
         variants={gridVariants}
         initial="hidden"
