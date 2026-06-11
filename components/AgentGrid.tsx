@@ -51,12 +51,12 @@ export default function AgentGrid() {
           className="font-bold text-3xl md:text-4xl mb-3"
           style={{ color: "var(--text-main)" }}
         >
-          에이전트들
+          에이전트 &amp; 앱
         </h2>
 
         {/* 서브 라인 */}
         <p className="text-base" style={{ color: "var(--text-dim)" }}>
-          전부 실제로 매일 굴러가는 에이전트들입니다.
+          전부 실제로 매일 굴러가는 것들입니다.
         </p>
       </SectionReveal>
 
