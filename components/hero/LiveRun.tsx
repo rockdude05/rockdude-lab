@@ -72,26 +72,29 @@ export default function LiveRun() {
   }, []);
 
   // 데모 전환 — 칩 클릭 시 상태를 이벤트 핸들러에서 일괄 초기화
+  // reduced motion이면 타이밍 효과가 전부 건너뛰므로 최종 상태로 직접 점프
   const switchDemo = useCallback(
     (idx: number) => {
       clearAllTimers();
+      const next = DEMO_AGENTS[idx] as DemoAgent;
       setActiveIdx(idx);
-      setPhase("typing");
-      setTypedCount(0);
-      setVisibleSteps(0);
+      setPhase(prefersReduced ? "done" : "typing");
+      setTypedCount(prefersReduced ? next.demo.command.length : 0);
+      setVisibleSteps(prefersReduced ? next.demo.steps.length : 0);
       setRunId((r) => r + 1);
     },
-    [clearAllTimers],
+    [clearAllTimers, prefersReduced],
   );
 
   // 리플레이 — 이벤트 핸들러에서 상태 초기화
   const replay = useCallback(() => {
+    if (prefersReduced) return; // 애니메이션 없음 → 리플레이 의미 없음
     clearAllTimers();
     setPhase("typing");
     setTypedCount(0);
     setVisibleSteps(0);
     setRunId((r) => r + 1);
-  }, [clearAllTimers]);
+  }, [clearAllTimers, prefersReduced]);
 
   // ─── 타이핑 시퀀스 ─────────────────────────────────────────────────────────
   // phase === "typing" 이면서 activeIdx/runId 변경 시 실행
@@ -150,7 +153,10 @@ export default function LiveRun() {
   const isLandscape =
     (IMAGE_DIMS[activeDemo.demo.resultImage]?.width ?? 1) >
     (IMAGE_DIMS[activeDemo.demo.resultImage]?.height ?? 1);
-  const cardWidth = isLandscape ? 210 : 150;
+  // 모바일에선 카드 축소 — 터미널 단계 텍스트를 가리지 않도록 (390px 뷰포트 검증 완료)
+  const cardWidthClass = isLandscape
+    ? "w-[150px] md:w-[210px]"
+    : "w-[105px] md:w-[150px]";
   const dims = IMAGE_DIMS[activeDemo.demo.resultImage] ?? {
     width: 1200,
     height: 1696,
@@ -191,8 +197,8 @@ export default function LiveRun() {
             </button>
           );
         })}
-        {/* 리플레이 버튼 — done 단계만 표시 */}
-        {showCTA && (
+        {/* 리플레이 버튼 — done 단계만 표시 (reduced motion에선 무의미) */}
+        {showCTA && !prefersReduced && (
           <button
             onClick={replay}
             className="ml-auto text-xs font-mono transition-opacity cursor-pointer"
@@ -279,9 +285,8 @@ export default function LiveRun() {
             }
             animate={{ opacity: 1, y: 0, rotate: -2 }}
             transition={{ type: "spring", stiffness: 200, damping: 22 }}
-            className="absolute -bottom-6 -right-4 md:-right-8 rounded-md overflow-hidden result-glow-card"
+            className={`absolute -bottom-6 -right-4 md:-right-8 rounded-md overflow-hidden result-glow-card ${cardWidthClass}`}
             style={{
-              width: cardWidth,
               // CSS 애니메이션에서 참조하는 커스텀 프로퍼티
               ["--glow-color" as string]: accentVar,
             }}
