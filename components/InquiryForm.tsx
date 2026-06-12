@@ -160,6 +160,19 @@ export default function InquiryForm() {
                     </a>
                   </div>
                 )}
+                {/* 추가 문의 — 성공 화면이 막다른 길이 되지 않게 폼으로 복귀 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBody("");
+                    setAccessCode(null);
+                    setCopied(false);
+                    setStatus("idle");
+                  }}
+                  className="scroll-hint-link text-sm mt-2 cursor-pointer"
+                >
+                  다른 문의 보내기 ↺
+                </button>
               </motion.div>
             ) : (
               <motion.form

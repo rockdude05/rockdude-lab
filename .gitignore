@@ -47,3 +47,6 @@ next-env.d.ts
 # 내부 설계 문서 — 공개 repo 미포함 (스펙 §4 카피 보호)
 docs/
 .superpowers/
+
+# 인스타 마케팅 에셋 — 로컬 전용
+marketing/
