@@ -15,6 +15,12 @@ export const dynamic = "force-dynamic";
 const STATUS_ORDER = ["new", "review", "building", "done"] as const;
 type InquiryStatus = (typeof STATUS_ORDER)[number];
 
+interface InquiryFile {
+  path: string;
+  name: string;
+  size: number;
+}
+
 interface Inquiry {
   id: string;
   created_at: string;
@@ -26,6 +32,7 @@ interface Inquiry {
   access_code?: string | null;
   reply?: string | null;
   replied_at?: string | null;
+  files?: InquiryFile[] | null;
 }
 
 function formatDate(iso: string): string {
@@ -129,6 +136,27 @@ export default async function AdminPage({
     );
   }
 
+  // 첨부파일 서명 URL 생성 (1시간, best-effort)
+  const signedUrlMap = new Map<string, string>(); // path → signed URL
+  try {
+    const { getSupabase: sb } = await import("@/lib/supabase");
+    const allFiles = inquiries.flatMap((inq) => inq.files ?? []);
+    await Promise.all(
+      allFiles.map(async (f) => {
+        try {
+          const { data } = await sb()
+            .storage.from("inquiry-files")
+            .createSignedUrl(f.path, 3600);
+          if (data?.signedUrl) signedUrlMap.set(f.path, data.signedUrl);
+        } catch {
+          // silent — will fall back to text-only display
+        }
+      })
+    );
+  } catch {
+    // Supabase not configured, skip
+  }
+
   // 상태별 그룹화
   const grouped = STATUS_ORDER.reduce<Record<string, Inquiry[]>>(
     (acc, s) => {
@@ -227,6 +255,34 @@ export default async function AdminPage({
                   >
                     {inq.body}
                   </p>
+                  {(inq.files ?? []).length > 0 && (
+                    <div className="flex flex-col gap-1">
+                      {(inq.files ?? []).map((f) => {
+                        const url = signedUrlMap.get(f.path);
+                        const sizeMB = (f.size / (1024 * 1024)).toFixed(1);
+                        return url ? (
+                          <a
+                            key={f.path}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm"
+                            style={{ color: "var(--accent-blue)" }}
+                          >
+                            📎 {f.name} ({sizeMB}MB)
+                          </a>
+                        ) : (
+                          <span
+                            key={f.path}
+                            className="text-sm"
+                            style={{ color: "var(--text-dim)" }}
+                          >
+                            📎 {f.name} ({sizeMB}MB)
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                   <form action={updateStatus} className="flex items-center gap-2">
                     <input type="hidden" name="id" value={inq.id} />
                     <select

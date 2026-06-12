@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionReveal, { revealItem } from "@/components/SectionReveal";
 import type { INQUIRY_TYPES } from "@/lib/inquiry-schema";
@@ -16,6 +16,21 @@ const CHIPS: { value: InquiryType; label: string }[] = [
 
 type Status = "idle" | "sending" | "success" | "error" | "ratelimit";
 
+const MAX_FILES = 3;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_MIME = ["application/pdf", "image/png", "image/jpeg", "image/heic", "image/webp"];
+
+interface AttachedFile {
+  file: File;
+  id: number;
+}
+
+let fileIdCounter = 0;
+
+function formatMB(bytes: number): string {
+  return (bytes / (1024 * 1024)).toFixed(1) + "MB";
+}
+
 export default function InquiryForm() {
   const [type, setType] = useState<InquiryType>("try");
   const [name, setName] = useState("");
@@ -26,6 +41,41 @@ export default function InquiryForm() {
   const [bodyHint, setBodyHint] = useState(false);
   const [accessCode, setAccessCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const incoming = Array.from(e.target.files ?? []);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    const newFiles = [...attachedFiles];
+    let errorMsg: string | null = null;
+
+    for (const f of incoming) {
+      if (newFiles.length >= MAX_FILES) {
+        errorMsg = `최대 ${MAX_FILES}개까지 첨부할 수 있어요.`;
+        break;
+      }
+      if (f.size > MAX_FILE_BYTES) {
+        errorMsg = `${f.name}: 파일 크기가 10MB를 초과해요.`;
+        continue;
+      }
+      if (!ALLOWED_MIME.includes(f.type)) {
+        errorMsg = `${f.name}: 지원하지 않는 파일 형식이에요.`;
+        continue;
+      }
+      newFiles.push({ file: f, id: ++fileIdCounter });
+    }
+
+    setAttachedFiles(newFiles);
+    setFileError(errorMsg);
+  }
+
+  function removeFile(id: number) {
+    setAttachedFiles((prev) => prev.filter((af) => af.id !== id));
+    setFileError(null);
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,11 +88,27 @@ export default function InquiryForm() {
     setStatus("sending");
 
     try {
-      const res = await fetch("/api/inquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, name, contact, body, website }),
-      });
+      let res: Response;
+
+      if (attachedFiles.length > 0) {
+        const fd = new FormData();
+        fd.append("type", type);
+        fd.append("name", name);
+        fd.append("contact", contact);
+        fd.append("body", body);
+        fd.append("website", website);
+        for (const af of attachedFiles) {
+          fd.append("files", af.file);
+        }
+        res = await fetch("/api/inquiry", { method: "POST", body: fd });
+      } else {
+        res = await fetch("/api/inquiry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, name, contact, body, website }),
+        });
+      }
+
       if (res.status === 429) {
         setStatus("ratelimit");
       } else if (res.ok) {
@@ -167,6 +233,8 @@ export default function InquiryForm() {
                     setBody("");
                     setAccessCode(null);
                     setCopied(false);
+                    setAttachedFiles([]);
+                    setFileError(null);
                     setStatus("idle");
                   }}
                   className="scroll-hint-link text-sm mt-2 cursor-pointer"
@@ -330,6 +398,76 @@ export default function InquiryForm() {
                     <p className="text-xs" style={{ color: "var(--accent-orange)" }}>
                       내용을 10자 이상 입력해주세요.
                     </p>
+                  )}
+                </div>
+
+                {/* 파일 첨부 */}
+                <div className="flex flex-col gap-2">
+                  <label
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-dim)" }}
+                  >
+                    파일 첨부 (선택)
+                  </label>
+                  <small style={{ color: "var(--text-dim)" }}>
+                    시험지 PDF나 사진 — 최대 3개, 개당 10MB
+                  </small>
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="application/pdf,image/png,image/jpeg,image/heic,image/webp"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  {/* Styled trigger button */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-lg px-4 py-3 text-sm text-left transition-all self-start"
+                    style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px dashed rgba(255,255,255,0.2)",
+                      color: "var(--text-dim)",
+                    }}
+                  >
+                    파일 선택
+                  </button>
+                  {/* File error */}
+                  {fileError && (
+                    <p className="text-xs" style={{ color: "var(--accent-orange)" }}>
+                      {fileError}
+                    </p>
+                  )}
+                  {/* Attached file list */}
+                  {attachedFiles.length > 0 && (
+                    <ul className="flex flex-col gap-1.5">
+                      {attachedFiles.map((af) => (
+                        <li
+                          key={af.id}
+                          className="flex items-center gap-2 text-sm"
+                          style={{ color: "var(--text-dim)" }}
+                        >
+                          <span className="flex-1 truncate">{af.file.name}</span>
+                          <span className="text-xs shrink-0">
+                            {formatMB(af.file.size)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(af.id)}
+                            className="shrink-0 text-xs rounded px-1.5 py-0.5 transition-colors"
+                            style={{
+                              background: "rgba(255,255,255,0.06)",
+                              color: "var(--text-dim)",
+                            }}
+                            aria-label={`${af.file.name} 제거`}
+                          >
+                            ✕
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
 

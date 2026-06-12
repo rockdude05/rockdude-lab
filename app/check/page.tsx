@@ -42,6 +42,7 @@ interface InquiryRow {
   status: string;
   reply: string;
   replied_at: string | null;
+  files: { path: string; name: string; size: number }[] | null;
 }
 
 export default async function CheckPage({
@@ -60,7 +61,7 @@ export default async function CheckPage({
     try {
       const { data, error } = await getSupabase()
         .from("inquiries")
-        .select("created_at,type,body,status,reply,replied_at")
+        .select("created_at,type,body,status,reply,replied_at,files")
         .eq("access_code", normalized)
         .maybeSingle();
       if (error) {
@@ -174,6 +175,14 @@ export default async function CheckPage({
                   >
                     {STATUS_LABELS[statusKey] ?? statusKey}
                   </span>
+                  {(inquiry.files ?? []).length > 0 && (
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--text-dim)" }}
+                    >
+                      📎 첨부 {(inquiry.files ?? []).length}개
+                    </span>
+                  )}
                 </div>
 
                 {/* 내 문의 */}
