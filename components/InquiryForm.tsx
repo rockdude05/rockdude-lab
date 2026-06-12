@@ -335,22 +335,23 @@ export default function InquiryForm() {
                   />
                 </div>
 
-                {/* 연락처 (선택) */}
+                {/* 연락처 (필수 — 결과·답변 전달처) */}
                 <div className="flex flex-col gap-1.5">
                   <label
                     htmlFor="inq-contact"
                     className="text-sm font-medium"
                     style={{ color: "var(--text-dim)" }}
                   >
-                    연락처 (선택)
+                    연락처
                   </label>
                   <input
                     id="inq-contact"
                     type="text"
+                    required
                     maxLength={120}
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
-                    placeholder="카톡 ID · 이메일 · 텔레그램 등"
+                    placeholder="카톡 ID · 이메일 · 텔레그램 등 (답변 받으실 곳)"
                     className="rounded-lg px-4 py-3 text-sm outline-none transition-all"
                     style={inputStyle}
                     onFocus={(e) => {
