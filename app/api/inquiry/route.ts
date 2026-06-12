@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   try {
     const result = await getSupabase()
       .from("inquiries")
-      .insert({ ...parsed.data, access_code, files: [] })
+      .insert({ ...parsed.data, access_code })
       .select("id")
       .single();
     insertError = result.error;
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       access_code = generateAccessCode();
       const retry = await getSupabase()
         .from("inquiries")
-        .insert({ ...parsed.data, access_code, files: [] })
+        .insert({ ...parsed.data, access_code })
         .select("id")
         .single();
       insertError = retry.error;
