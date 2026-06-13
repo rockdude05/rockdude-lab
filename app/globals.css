@@ -334,3 +334,36 @@ body {
 .section-title-glow {
   text-shadow: 0 0 26px rgba(108, 99, 255, 0.22);
 }
+
+/* 문의 폼 카드 — 은은한 블루→퍼플 그라데이션 보더 + soft glow(브랜드 결속) */
+.inquiry-card {
+  background:
+    linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent-blue) 45%, transparent),
+        color-mix(in srgb, var(--accent-purple) 45%, transparent)
+      )
+      border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 12px 50px color-mix(in srgb, var(--accent-purple) 12%, transparent);
+}
+
+/* 문의 폼 입력 — focus 시 accent 보더 + 글로우 링 (인라인 onFocus/onBlur 대체) */
+.inquiry-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.inquiry-input::placeholder {
+  color: color-mix(in srgb, var(--text-dim) 78%, transparent);
+}
+.inquiry-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent-blue) 14%, transparent),
+    0 0 22px color-mix(in srgb, var(--accent-blue) 18%, transparent);
+}

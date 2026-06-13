@@ -125,12 +125,6 @@ export default function InquiryForm() {
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    color: "var(--text-main)",
-  };
-
   return (
     <section id="inquiry" className="max-w-2xl mx-auto px-6 py-24">
       <SectionReveal className="flex flex-col gap-6">
@@ -143,7 +137,7 @@ export default function InquiryForm() {
             ~/inquiry
           </p>
           <h2
-            className="text-3xl md:text-4xl font-bold"
+            className="section-title-glow text-3xl md:text-4xl font-bold break-keep"
             style={{ color: "var(--text-main)" }}
           >
             문의 · 요청
@@ -156,11 +150,7 @@ export default function InquiryForm() {
         {/* 폼 카드 */}
         <motion.div
           variants={revealItem}
-          className="rounded-2xl p-6 md:p-8 flex flex-col gap-5 relative overflow-hidden"
-          style={{
-            background: "var(--bg-panel)",
-            border: "1px solid rgba(255,255,255,0.07)",
-          }}
+          className="inquiry-card rounded-2xl p-6 md:p-8 flex flex-col gap-5 relative overflow-hidden"
         >
           <AnimatePresence mode="wait">
             {status === "success" ? (
@@ -323,15 +313,7 @@ export default function InquiryForm() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="이름 또는 별명"
-                    className="rounded-lg px-4 py-3 text-sm outline-none transition-all"
-                    style={inputStyle}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-blue)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor =
-                        "rgba(255,255,255,0.08)";
-                    }}
+                    className="inquiry-input rounded-lg px-4 py-3 text-sm"
                   />
                 </div>
 
@@ -352,15 +334,7 @@ export default function InquiryForm() {
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
                     placeholder="결과를 받으실 이메일 주소"
-                    className="rounded-lg px-4 py-3 text-sm outline-none transition-all"
-                    style={inputStyle}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-blue)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor =
-                        "rgba(255,255,255,0.08)";
-                    }}
+                    className="inquiry-input rounded-lg px-4 py-3 text-sm"
                   />
                 </div>
 
@@ -385,15 +359,7 @@ export default function InquiryForm() {
                         setBodyHint(false);
                     }}
                     placeholder="자유롭게 적어주세요 (10자 이상)"
-                    className="rounded-lg px-4 py-3 text-sm outline-none transition-all resize-none"
-                    style={inputStyle}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--accent-blue)";
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor =
-                        "rgba(255,255,255,0.08)";
-                    }}
+                    className="inquiry-input rounded-lg px-4 py-3 text-sm resize-none"
                   />
                   {bodyHint && (
                     <p className="text-xs" style={{ color: "var(--accent-orange)" }}>

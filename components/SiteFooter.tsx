@@ -2,10 +2,16 @@
 
 export default function SiteFooter() {
   return (
-    <footer
-      className="w-full mt-12"
-      style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-    >
+    <footer className="relative w-full mt-12">
+      {/* 마감 디테일 — 중앙 페이드 그라데이션 디바이더(violet→blue) */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 inset-x-0 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent-purple) 55%, transparent), color-mix(in srgb, var(--accent-blue) 55%, transparent), transparent)",
+        }}
+      />
       <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="font-mono text-sm" style={{ color: "var(--text-dim)" }}>
           rockdude<span style={{ color: "var(--accent-purple)" }}>.lab</span>
