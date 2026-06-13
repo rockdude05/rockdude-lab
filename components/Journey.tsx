@@ -369,6 +369,24 @@ export default function Journey() {
                       background: `radial-gradient(circle, ${cut.glow} 0%, transparent 62%)`,
                     }}
                   />
+                  {/* 활성 컷 강조 — 부드러운 원형 바이올렛 글로우.
+                      📚 사각형 실루엣을 추적하던 drop-shadow 대신 원형 radial → 흐릿한 패널 artifact 제거 */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute pointer-events-none"
+                    style={{
+                      top: "46%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "min(560px, 80vw)",
+                      height: "min(560px, 80vw)",
+                      borderRadius: "50%",
+                      background:
+                        "radial-gradient(circle, rgba(108,99,255,0.20) 0%, transparent 60%)",
+                      opacity: i === activeIndex ? 1 : 0,
+                      transition: "opacity 0.5s ease",
+                    }}
+                  />
                   {/* 배경 워터마크 번호 — 위로 올려서 숫자 상단이 카드 위로 항상 노출
                       (컷 1처럼 키 큰 카드도 못 가리게) */}
                   <span
@@ -389,17 +407,7 @@ export default function Journey() {
                   >
                     {cut.num}
                   </span>
-                  {/* 활성 컷 강조 — 현재 컷 카드에 바이올렛 글로우(drop-shadow) */}
-                  <div
-                    className="relative scale-110 md:scale-125"
-                    style={{
-                      transition: "filter 0.4s ease",
-                      filter:
-                        i === activeIndex
-                          ? "drop-shadow(0 12px 40px rgba(108,99,255,0.45))"
-                          : "none",
-                    }}
-                  >
+                  <div className="relative scale-110 md:scale-125">
                     <CardComponent />
                   </div>
                   <div className="relative flex flex-col items-center gap-1.5">
