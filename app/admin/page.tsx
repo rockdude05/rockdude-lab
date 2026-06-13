@@ -15,6 +15,7 @@ import {
   grantTopup,
   rejectTopup,
   adjustCoins,
+  refundRun,
 } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
@@ -205,6 +206,27 @@ export default async function AdminPage({
   }
   const pendingTopups = topups.filter((t) => t.status === "pending");
 
+  // 실행(runs) — 최근 50건
+  let runs: {
+    id: string;
+    agent: string;
+    cost: number;
+    status: string;
+    created_at: string;
+    profiles: { email: string } | null;
+  }[] = [];
+  try {
+    const { getSupabase: sb } = await import("@/lib/supabase");
+    const { data } = await sb()
+      .from("agent_runs")
+      .select("id, agent, cost, status, created_at, profiles(email)")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    runs = (data as unknown as typeof runs) ?? [];
+  } catch {
+    // Supabase 미설정/테이블 미적용 — 빈 목록
+  }
+
   return (
     <main
       className="min-h-screen px-6 py-12 max-w-4xl mx-auto"
@@ -348,6 +370,74 @@ export default async function AdminPage({
             </button>
           </form>
         </details>
+      </section>
+
+      {/* ─── 실행(runs) 관리 (Phase 3) ─── */}
+      <section className="mb-12">
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{ color: "var(--text-dim)" }}
+        >
+          실행 ({runs.length})
+        </h2>
+        {runs.length === 0 && (
+          <p className="text-sm mb-4" style={{ color: "var(--text-dim)" }}>
+            실행 내역이 없습니다.
+          </p>
+        )}
+        <div className="flex flex-col gap-3">
+          {runs.map((r) => (
+            <div
+              key={r.id}
+              className="rounded-xl p-4 flex flex-wrap items-center gap-3"
+              style={{
+                background: "var(--bg-panel)",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <span
+                className="text-xs font-mono"
+                style={{ color: "var(--text-dim)" }}
+              >
+                {formatDate(r.created_at)}
+              </span>
+              <span
+                className="text-sm font-semibold"
+                style={{ color: "var(--text-main)" }}
+              >
+                {r.profiles?.email ?? "?"}
+              </span>
+              <span className="text-sm" style={{ color: "var(--text-dim)" }}>
+                {r.agent}
+              </span>
+              <span
+                className="text-sm font-mono"
+                style={{ color: "var(--accent-gold)" }}
+              >
+                {r.cost}코인
+              </span>
+              <span className="text-sm" style={{ color: "var(--text-dim)" }}>
+                {r.status}
+              </span>
+              {r.status !== "refunded" && (
+                <form action={refundRun} className="ml-auto">
+                  <input type="hidden" name="id" value={r.id} />
+                  <button
+                    type="submit"
+                    className="text-sm rounded-lg px-3 py-1.5"
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      color: "var(--text-dim)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                    }}
+                  >
+                    환불
+                  </button>
+                </form>
+              )}
+            </div>
+          ))}
+        </div>
       </section>
 
       {inquiries.length === 0 && (

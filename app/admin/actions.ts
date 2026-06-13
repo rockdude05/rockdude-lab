@@ -162,3 +162,30 @@ export async function adjustCoins(formData: FormData) {
   if (error) console.error("[admin] adjustCoins 실패:", error.message);
   revalidatePath("/admin");
 }
+
+// 실행 환불 — run의 코인을 회원에게 환불 + status=refunded (중복환불 가드).
+export async function refundRun(formData: FormData) {
+  const cookieStore = await cookies();
+  if (!adminOk(cookieStore.get("admin_token")?.value ?? "")) redirect("/admin");
+  const id = formData.get("id");
+  if (typeof id !== "string" || !UUID_RE.test(id)) return;
+  const sb = getSupabase();
+  const { data: run } = await sb
+    .from("agent_runs")
+    .select("user_id, cost, status")
+    .eq("id", id)
+    .single();
+  if (!run || run.status === "refunded") return; // 중복환불 가드
+  const { error } = await sb.rpc("apply_coin_delta", {
+    p_user_id: run.user_id,
+    p_delta: run.cost,
+    p_reason: "refund",
+    p_ref_id: id,
+  });
+  if (error) {
+    console.error("[admin] refundRun 실패:", error.message);
+    return;
+  }
+  await sb.from("agent_runs").update({ status: "refunded" }).eq("id", id);
+  revalidatePath("/admin");
+}
