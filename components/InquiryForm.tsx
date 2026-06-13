@@ -131,13 +131,13 @@ export default function InquiryForm() {
         {/* 헤딩 */}
         <motion.div variants={revealItem} className="flex flex-col gap-3">
           <p
-            className="font-mono text-sm tracking-widest"
+            className="eyebrow-rule font-mono text-sm tracking-widest"
             style={{ color: "var(--accent-blue)" }}
           >
             ~/inquiry
           </p>
           <h2
-            className="section-title-glow text-3xl md:text-4xl font-bold break-keep"
+            className="section-title-glow display-title break-keep"
             style={{ color: "var(--text-main)" }}
           >
             문의 · 요청

@@ -284,13 +284,13 @@ export default function Journey() {
       {/* 헤딩 블록 — SectionReveal 래퍼 */}
       <SectionReveal className="max-w-6xl mx-auto px-6 pt-24 pb-8">
         <p
-          className="font-mono text-sm mb-3"
+          className="eyebrow-rule font-mono text-sm mb-3"
           style={{ color: "var(--accent-purple)" }}
         >
           ~/journey
         </p>
         <h2
-          className="section-title-glow font-bold text-3xl md:text-4xl mb-3 break-keep"
+          className="section-title-glow display-title mb-3 break-keep"
           style={{ color: "var(--text-main)" }}
         >
           시험지 한 장의 여정

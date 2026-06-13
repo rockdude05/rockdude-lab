@@ -6,11 +6,14 @@ export default function MembershipTeaser() {
     <section id="membership" className="max-w-5xl mx-auto px-6 py-16 w-full">
       <div className="membership-card rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
         <div className="flex flex-col gap-2">
-          <p className="font-mono text-sm" style={{ color: "var(--accent-gold)" }}>
+          <p
+            className="eyebrow-rule font-mono text-sm"
+            style={{ color: "var(--accent-gold)" }}
+          >
             ~/membership
           </p>
           <h2
-            className="font-bold text-2xl md:text-3xl break-keep"
+            className="font-semibold text-2xl md:text-3xl tracking-[-0.02em] break-keep"
             style={{ color: "var(--text-main)" }}
           >
             <span className="gold-glow">코인</span>으로 에이전트를 직접 실행

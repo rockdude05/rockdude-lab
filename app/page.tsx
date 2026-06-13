@@ -39,7 +39,7 @@ export default function Home() {
 
         {/* H1 */}
         <h1
-          className="hero-rise font-bold text-4xl md:text-6xl leading-tight text-center break-keep"
+          className="hero-rise font-bold text-4xl md:text-6xl leading-tight text-center break-keep text-balance tracking-[-0.02em]"
           style={{ color: "var(--text-main)", animationDelay: "0.16s" }}
         >
           풀이도, 노트도, 분석도

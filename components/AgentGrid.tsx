@@ -40,7 +40,7 @@ export default function AgentGrid() {
       <SectionReveal className="mb-12">
         {/* 아이브로우 — 모노 소문자 accent-green */}
         <p
-          className="font-mono text-sm mb-3"
+          className="eyebrow-rule font-mono text-sm mb-3"
           style={{ color: "var(--accent-green)" }}
         >
           ~/agents
@@ -48,7 +48,7 @@ export default function AgentGrid() {
 
         {/* H2 */}
         <h2
-          className="section-title-glow font-bold text-3xl md:text-4xl mb-3 break-keep"
+          className="section-title-glow display-title mb-3 break-keep"
           style={{ color: "var(--text-main)" }}
         >
           에이전트 &amp; 앱

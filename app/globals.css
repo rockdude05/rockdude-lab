@@ -364,6 +364,30 @@ body {
   text-shadow: 0 0 26px rgba(108, 99, 255, 0.22);
 }
 
+/* 디스플레이 헤딩 위계 — clamp 사이즈 + 음수 트래킹 + 타이트 행간.
+   균질한 font-bold text-3xl/4xl을 깨고 '편집된' 위계를 만듦(글로우 0 추가, 위계만). */
+.display-title {
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* 모노 아이브로우 마커 — 앞에 14px×1px accent 헤어라인.
+   터미널 프롬프트(~/path)가 '깎인 한 줄'로 정렬되는 정밀 디테일(currentColor=아이브로우 accent). */
+.eyebrow-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.eyebrow-rule::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
 /* 문의 폼 카드 — 은은한 블루→퍼플 그라데이션 보더 + soft glow(브랜드 결속) */
 .inquiry-card {
   background:
