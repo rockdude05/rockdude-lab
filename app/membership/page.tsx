@@ -5,6 +5,8 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import LoginPanel from "@/components/membership/LoginPanel";
 
+// 세션(쿠키) 의존 → 절대 정적 prerender 불가. build 시 prerender 차단.
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Rockdude Lab — 회원 (코인 실행)" };
 
 export default async function MembershipPage() {

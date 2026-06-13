@@ -4,6 +4,8 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import SignOutButton from "@/components/dashboard/SignOutButton";
 
+// 세션(쿠키) 의존 → 절대 정적 prerender 불가. build 시 prerender 차단.
+export const dynamic = "force-dynamic";
 export const metadata = { title: "대시보드 — Rockdude Lab" };
 
 export default async function DashboardPage() {
