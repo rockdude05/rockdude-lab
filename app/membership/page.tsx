@@ -18,6 +18,8 @@ export default async function MembershipPage() {
 
   return (
     <>
+      {/* 골드 회원 존 — 따뜻한 다크 배경(전역 바이올렛 오로라를 덮음) */}
+      <div className="zone-gold-bg" aria-hidden="true" />
       <SiteHeader />
       <main className="min-h-screen flex flex-col items-center justify-center max-w-2xl mx-auto px-6 w-full pt-32 pb-24 gap-8">
         <div className="flex flex-col items-center gap-3 text-center">

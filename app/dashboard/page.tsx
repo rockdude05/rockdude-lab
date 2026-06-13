@@ -25,6 +25,8 @@ export default async function DashboardPage() {
 
   return (
     <>
+      {/* 골드 회원 존 — 따뜻한 다크 배경(전역 바이올렛 오로라를 덮음) */}
+      <div className="zone-gold-bg" aria-hidden="true" />
       <SiteHeader />
       <main className="min-h-screen max-w-4xl mx-auto px-6 w-full pt-32 pb-24 flex flex-col gap-10">
         <div className="flex items-start justify-between gap-4">

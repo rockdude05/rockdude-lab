@@ -581,3 +581,24 @@ body {
   color: var(--accent-gold);
   text-shadow: 0 0 26px rgba(245, 177, 76, 0.35);
 }
+
+/* 골드 회원 존 배경 — /membership·/dashboard 전용 따뜻한 다크(금과 어울림).
+   전역 바이올렛 오로라(GlowBackground, z-index:-1) 위에 렌더돼 덮음(불투명 베이스). */
+.zone-gold-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 70% 52% at 50% -6%,
+      rgba(245, 177, 76, 0.11),
+      transparent 56%
+    ),
+    radial-gradient(
+      ellipse 64% 50% at 50% 106%,
+      rgba(232, 199, 122, 0.06),
+      transparent 56%
+    ),
+    #14110b;
+}
