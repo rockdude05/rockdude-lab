@@ -30,9 +30,9 @@ const CUTS = [
     num: "03",
   },
   {
-    step: "④ 텔레그램 도착",
-    desc: "검증을 마친 풀이와 그림이 PDF로 도착합니다",
-    glow: "rgba(34, 158, 217, 0.24)",
+    step: "④ 이메일·대시보드 도착",
+    desc: "검증을 마친 풀이와 그림이 PDF로, 이메일과 대시보드에 도착합니다",
+    glow: "rgba(77, 139, 255, 0.22)",
     num: "04",
   },
 ];
@@ -180,21 +180,33 @@ function CutSolve() {
   );
 }
 
-/** 컷 4: 텔레그램 버블 + CTA */
-function CutTelegram() {
+/** 컷 4: 이메일·대시보드 받은함 + CTA */
+function CutDelivery() {
   return (
     <div className="flex flex-col items-center gap-3">
-      {/* 텔레그램 버블들 */}
+      {/* 받은함 — 이메일·대시보드 도착(텔레그램 아님) */}
       <div className="flex flex-col gap-2">
-        {["✈️ 풀이.pdf (17쪽)", "✈️ 그림.pdf (8장)"].map((msg, i) => (
+        {["✉️ 풀이.pdf (17쪽)", "✉️ 그림.pdf (8장)"].map((msg, i) => (
           <div
             key={i}
-            className="rounded-xl px-4 py-2.5 text-sm font-medium text-white"
-            style={{ background: "#229ed9" }}
+            className="rounded-xl px-4 py-2.5 text-sm font-medium"
+            style={{
+              background: "var(--bg-panel)",
+              border:
+                "1px solid color-mix(in srgb, var(--accent-blue) 35%, transparent)",
+              color: "var(--text-main)",
+              boxShadow: "var(--edge-top)",
+            }}
           >
             {msg}
           </div>
         ))}
+        <p
+          className="text-[11px] text-center"
+          style={{ color: "var(--text-dim)" }}
+        >
+          대시보드에서도 다운로드
+        </p>
       </div>
       {/* CTA 버튼 */}
       <a
@@ -207,7 +219,7 @@ function CutTelegram() {
   );
 }
 
-const CUT_CARDS = [CutExam, CutRead, CutSolve, CutTelegram];
+const CUT_CARDS = [CutExam, CutRead, CutSolve, CutDelivery];
 
 // 📚 학습: useSyncExternalStore로 만든 lint-safe "mounted" 감지 —
 // 서버 스냅샷 false, 클라이언트 스냅샷 true → effect 없이 하이드레이션 후 1회 재렌더.

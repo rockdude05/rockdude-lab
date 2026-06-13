@@ -186,6 +186,51 @@ export default function AgentCard({ agent }: AgentCardProps) {
           >
             {agent.tagline}
           </p>
+
+          {/* 서비스 배지 — 데모/코인 실행/준비중. 골드 룰 유지(메인은 중립/바이올렛). */}
+          {(agent.demo || agent.coin || agent.soon) && (
+            <div className="flex flex-wrap items-center gap-1.5 mt-1">
+              {agent.demo && (
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-mono border"
+                  style={{
+                    color: "var(--accent-green)",
+                    borderColor:
+                      "color-mix(in srgb, var(--accent-green) 35%, transparent)",
+                    background:
+                      "color-mix(in srgb, var(--accent-green) 10%, transparent)",
+                  }}
+                >
+                  데모
+                </span>
+              )}
+              {agent.coin && (
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-mono border"
+                  style={{
+                    color: "var(--accent-purple)",
+                    borderColor:
+                      "color-mix(in srgb, var(--accent-purple) 38%, transparent)",
+                    background:
+                      "color-mix(in srgb, var(--accent-purple) 12%, transparent)",
+                  }}
+                >
+                  코인 실행
+                </span>
+              )}
+              {agent.soon && (
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-mono border"
+                  style={{
+                    color: "var(--text-dim)",
+                    borderColor: "rgba(255,255,255,0.12)",
+                  }}
+                >
+                  준비중
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

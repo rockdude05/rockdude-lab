@@ -28,7 +28,7 @@ const IMAGE_DIMS: Record<string, { width: number; height: number }> = {
 };
 
 // 애니메이션 단계 타입
-type Phase = "typing" | "steps" | "result" | "telegram" | "done";
+type Phase = "typing" | "steps" | "result" | "deliver" | "done";
 
 type DemoAgent = Agent & { demo: AgentDemo };
 
@@ -149,8 +149,8 @@ export default function LiveRun() {
     if (prefersReduced) return;
 
     if (phase === "result") {
-      addTimer(() => setPhase("telegram"), 900);
-    } else if (phase === "telegram") {
+      addTimer(() => setPhase("deliver"), 900);
+    } else if (phase === "deliver") {
       addTimer(() => setPhase("done"), 600);
     }
 
@@ -171,8 +171,8 @@ export default function LiveRun() {
   };
 
   const showResult =
-    phase === "result" || phase === "telegram" || phase === "done";
-  const showToast = phase === "telegram" || phase === "done";
+    phase === "result" || phase === "deliver" || phase === "done";
+  const showToast = phase === "deliver" || phase === "done";
   const showCTA = phase === "done";
 
   return (
@@ -311,7 +311,7 @@ export default function LiveRun() {
           </motion.div>
         )}
 
-        {/* 텔레그램 토스트 — 패널 좌측 하단 오버행 */}
+        {/* 이메일 도착 토스트 — 패널 좌측 하단 오버행 (텔레그램 아님) */}
         {showToast && (
           <motion.div
             key={`toast-${activeIdx}-${runId}`}
@@ -326,9 +326,9 @@ export default function LiveRun() {
               restDelta: 0.001,
             }}
             className="absolute -bottom-5 left-4 rounded-xl px-3.5 py-2 text-sm font-medium text-white"
-            style={{ background: "#229ed9" }}
+            style={{ background: accentVar }}
           >
-            ✈️ {activeDemo.demo.resultCaption}
+            ✉️ {activeDemo.demo.resultCaption}
           </motion.div>
         )}
       </div>

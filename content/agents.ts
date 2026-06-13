@@ -21,6 +21,8 @@ export type Agent = {
   status: "live" | "beta";
   icon?: string; // 앱 로고 (있으면 카드 이름 옆에 표시 — 앱 카테고리용)
   demo?: AgentDemo;
+  coin?: boolean; // 코인 실행 지원(현재 데모+코인 = 동일 3종). 데모 가능 여부는 demo 필드로 판별
+  soon?: boolean; // 곧 서비스 예정(준비중) — 인프라 갖추면 코인 실행 확장
 };
 
 export const AGENTS: Agent[] = [
@@ -28,12 +30,13 @@ export const AGENTS: Agent[] = [
     id: "homework",
     name: "homework-solver",
     category: "공부 에이전트",
-    tagline: "기말 풀이 PDF가 텔레그램으로 도착",
+    tagline: "기말 풀이 PDF가 이메일로 도착",
     description:
       "수업자료를 대조하고, 계산을 두 번 확인하고, 그림까지 스스로 검증한 풀이를 PDF로 보내줍니다.",
     accent: "blue",
     image: "/agents/homework/card.png",
     status: "live",
+    coin: true,
     demo: {
       command: "/homework-solver 유기화학1 2024 기말고사",
       steps: [
@@ -42,7 +45,7 @@ export const AGENTS: Agent[] = [
         { label: "계산 23개 재확인", delayMs: 2500 },
       ],
       resultImage: "/agents/homework/result.png",
-      resultCaption: "풀이 PDF 17쪽 — Telegram 도착",
+      resultCaption: "풀이 PDF 17쪽 — 이메일 도착",
     },
   },
   {
@@ -55,6 +58,7 @@ export const AGENTS: Agent[] = [
     accent: "green",
     image: "/agents/notes/card.png",
     status: "live",
+    coin: true,
     demo: {
       command: "/study-notes 탄성파탐사 Ch1~3 시험 대비",
       steps: [
@@ -63,7 +67,7 @@ export const AGENTS: Agent[] = [
         { label: "공부노트 PDF 생성", delayMs: 2600 },
       ],
       resultImage: "/agents/notes/result.png",
-      resultCaption: "공부노트 PDF — Telegram 도착",
+      resultCaption: "공부노트 PDF — 이메일 도착",
     },
   },
   {
@@ -76,6 +80,7 @@ export const AGENTS: Agent[] = [
     accent: "purple",
     image: "/agents/analysis/card.png",
     status: "live",
+    coin: true,
     demo: {
       command: "/course-analyzer 유기화학1 1,2- vs 1,4-addition",
       steps: [
@@ -84,7 +89,7 @@ export const AGENTS: Agent[] = [
         { label: "출처 페이지까지 표기해 정리", delayMs: 2600 },
       ],
       resultImage: "/agents/analysis/result.png",
-      resultCaption: "개념 분석 PDF 5쪽 — Telegram 도착",
+      resultCaption: "개념 분석 PDF 5쪽 — 이메일 도착",
     },
   },
   {
@@ -97,6 +102,7 @@ export const AGENTS: Agent[] = [
     accent: "orange",
     image: "/agents/figures/card.png",
     status: "live",
+    soon: true,
   },
   {
     id: "paper",
@@ -108,6 +114,7 @@ export const AGENTS: Agent[] = [
     accent: "blue",
     image: "/agents/paper/card.png",
     status: "live",
+    soon: true,
   },
   {
     id: "lecture",
@@ -119,6 +126,7 @@ export const AGENTS: Agent[] = [
     accent: "purple",
     image: "/agents/lecture/card.png",
     status: "live",
+    soon: true,
   },
   {
     id: "lab",
@@ -130,6 +138,7 @@ export const AGENTS: Agent[] = [
     accent: "green",
     image: "/agents/lab/card.png",
     status: "live",
+    soon: true,
   },
   {
     id: "cogva",

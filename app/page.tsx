@@ -54,7 +54,7 @@ export default function Home() {
           style={{ color: "var(--text-dim)", animationDelay: "0.27s" }}
         >
           기말 풀이부터 논문 분석까지 — 명령 한 줄이면 검증을 거친 결과물이
-          텔레그램으로 도착합니다. 아래에서 직접 실행해보세요.
+          이메일과 대시보드로 도착합니다. 아래에서 직접 실행해보세요.
         </p>
 
         {/* 라이브 런 — hero-rise 래퍼가 stacking context(z-index:1)를 만들어
