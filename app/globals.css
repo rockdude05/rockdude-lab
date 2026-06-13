@@ -14,8 +14,28 @@
   /* 멤버십(구독) 영역 별색 — 골드/앰버(2026-06-13 확정). 바이올렛 위 프리미엄 신호 */
   --accent-gold: #f5b14c;
   --accent-gold-soft: #e8c77a;
+  /* 광원 표면 물성 (2026-06-13) — 단일 광원 베벨 + specular/rim 토큰.
+     "뒤에서 번지는 글로우"와 직교: 위는 키라이트 받고 아래는 가라앉는 방향성 빛. */
+  --edge-top: inset 0 1px 0 rgba(255, 255, 255, 0.10);   /* 상단 키라이트 */
+  --edge-bottom: inset 0 -1px 0 rgba(0, 0, 0, 0.35);      /* 하단 가라앉음(버튼/입력) */
+  --panel-floor: inset 0 -1px 0 rgba(108, 99, 255, 0.10); /* 패널 하단 바이올렛 환경광 */
+  --rim-tint: rgba(255, 255, 255, 0.55);                  /* 흰빛 림(멤버십은 골드 오버라이드) */
+  --rim-width: 1.5px;
+  --spec-intensity: 0.9;
   --glow-strength: 0.35;
   --motion-speed: 1;
+}
+
+/* conic 각도 GPU 보간/transition 가능하게 등록(JS 0KB). reduced-motion이면 정적 각도로 안착. */
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 135deg;
+}
+@property --a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -45,11 +65,11 @@ body {
 .cta-glass {
   background:
     linear-gradient(rgba(19, 17, 31, 0.85), rgba(19, 17, 31, 0.85)) padding-box,
-    linear-gradient(135deg, var(--accent-blue), var(--accent-purple)) border-box;
+    linear-gradient(135deg in oklab, var(--accent-blue), var(--accent-purple)) border-box;
   border: 1px solid transparent;
   box-shadow:
     0 0 28px rgba(77, 139, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    var(--edge-top);
   color: var(--text-main);
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
@@ -128,8 +148,9 @@ body {
    background-size 200%로 그라데이션을 박스보다 넓게 깔고 background-position을 스윕하면
    글자 안에서 색이 흘러간다. 양끝 색을 같게(blue…blue) 만들어 이음매 없이 무한 루프. */
 .headline-gradient {
+  /* in oklab: 보라↔블루 보간의 회색 죽는 구간 제거 = 같은 색인데 "더 비싼 빛" */
   background-image: linear-gradient(
-    100deg,
+    100deg in oklab,
     var(--accent-blue) 0%,
     var(--accent-purple) 30%,
     #a78bfa 50%,
@@ -141,9 +162,10 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  /* 글자 자체가 바이올렛 빛을 뿜도록 — drop-shadow는 클립된 글자 모양에 적용됨 */
-  filter: drop-shadow(0 0 22px rgba(108, 99, 255, 0.40));
-  animation: headline-shine 7s linear infinite;
+  /* 글자 글로우 — specular/베벨 추가분만큼 톤다운(빛 교환: 22→14px) */
+  filter: drop-shadow(0 0 14px rgba(108, 99, 255, 0.34));
+  /* 스윕 감속(7s→11s): 분주함 → 고요한 고급 */
+  animation: headline-shine 11s linear infinite;
 }
 @keyframes headline-shine {
   to {
@@ -298,7 +320,7 @@ body {
 /* Stats 숫자 — 바이올렛 그라데이션 + 글로우 (헤드라인 언어 재사용) */
 .stat-number {
   background-image: linear-gradient(
-    135deg,
+    135deg in oklab,
     var(--text-main) 0%,
     var(--accent-purple) 55%,
     var(--accent-blue) 100%
@@ -307,7 +329,8 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  filter: drop-shadow(0 0 18px rgba(108, 99, 255, 0.30));
+  /* 글로우 톤다운(빛 교환: 18→12px) — 조판/베벨이 먼저 읽히게 */
+  filter: drop-shadow(0 0 12px rgba(108, 99, 255, 0.26));
 }
 
 /* Stats 글래스 패널 — 상단 accent 바 + hover 글로우 */
@@ -317,6 +340,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   overflow: hidden;
+  /* 단일 광원 베벨 — 위 흰빛 키라이트 + 아래 바이올렛 환경광 (정적 표면 물성) */
+  box-shadow: var(--edge-top), var(--panel-floor);
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 .stat-panel::before {
@@ -324,12 +349,13 @@ body {
   position: absolute;
   inset: 0 0 auto 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+  background: linear-gradient(90deg in oklab, var(--accent-purple), var(--accent-blue));
   opacity: 0.7;
 }
 .stat-panel:hover {
   border-color: color-mix(in srgb, var(--accent-purple) 38%, transparent);
-  box-shadow: 0 8px 36px color-mix(in srgb, var(--accent-purple) 20%, transparent);
+  box-shadow: var(--edge-top), var(--panel-floor),
+    0 8px 36px color-mix(in srgb, var(--accent-purple) 20%, transparent);
   transform: translateY(-2px);
 }
 
@@ -343,13 +369,16 @@ body {
   background:
     linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
     linear-gradient(
-        135deg,
+        135deg in oklab,
         color-mix(in srgb, var(--accent-blue) 45%, transparent),
         color-mix(in srgb, var(--accent-purple) 45%, transparent)
       )
       border-box;
   border: 1px solid transparent;
-  box-shadow: 0 12px 50px color-mix(in srgb, var(--accent-purple) 12%, transparent);
+  box-shadow:
+    0 12px 50px color-mix(in srgb, var(--accent-purple) 12%, transparent),
+    var(--edge-top),
+    var(--panel-floor);
 }
 
 /* 문의 폼 입력 — focus 시 accent 보더 + 글로우 링 (인라인 onFocus/onBlur 대체) */
@@ -357,6 +386,8 @@ body {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-main);
+  /* 눌린 금속 홈 — 살짝 들어간 표면(번짐 의존 ↓) */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.22);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .inquiry-input::placeholder {
@@ -366,9 +397,12 @@ body {
   outline: none;
   border-color: var(--accent-blue);
   background: rgba(255, 255, 255, 0.06);
+  /* 글로우 링 절반 축소 + accent 1px 인레이(focus 가시성 WCAG 유지) + 상단 하이라이트 */
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--accent-blue) 14%, transparent),
-    0 0 22px color-mix(in srgb, var(--accent-blue) 18%, transparent);
+    0 0 0 2px color-mix(in srgb, var(--accent-blue) 12%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent-blue) 12%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent-blue) 55%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* ─── 멤버십 영역(골드) — 구독 섹션 별색 (2026-06-13) ───────────────────────── */
@@ -401,7 +435,10 @@ body {
       )
       border-box;
   border: 1px solid transparent;
-  box-shadow: 0 12px 50px color-mix(in srgb, var(--accent-gold) 14%, transparent);
+  box-shadow:
+    0 12px 50px color-mix(in srgb, var(--accent-gold) 14%, transparent),
+    var(--edge-top),
+    inset 0 -1px 0 rgba(245, 177, 76, 0.10);
 }
 /* 골드 글로우 텍스트(코인 숫자 등) */
 .gold-glow {
