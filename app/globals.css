@@ -11,6 +11,9 @@
   --accent-green: #3fc77b;
   --accent-orange: #ff8a3d;
   --accent-purple: #6c63ff;
+  /* 멤버십(구독) 영역 별색 — 골드/앰버(2026-06-13 확정). 바이올렛 위 프리미엄 신호 */
+  --accent-gold: #f5b14c;
+  --accent-gold-soft: #e8c77a;
   --glow-strength: 0.35;
   --motion-speed: 1;
 }
@@ -366,4 +369,42 @@ body {
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--accent-blue) 14%, transparent),
     0 0 22px color-mix(in srgb, var(--accent-blue) 18%, transparent);
+}
+
+/* ─── 멤버십 영역(골드) — 구독 섹션 별색 (2026-06-13) ───────────────────────── */
+/* 골드 CTA — .cta-glass의 골드 버전 */
+.cta-gold {
+  background:
+    linear-gradient(rgba(19, 17, 31, 0.85), rgba(19, 17, 31, 0.85)) padding-box,
+    linear-gradient(135deg, var(--accent-gold), var(--accent-gold-soft)) border-box;
+  border: 1px solid transparent;
+  box-shadow:
+    0 0 28px rgba(245, 177, 76, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.cta-gold:hover {
+  box-shadow:
+    0 0 44px rgba(245, 177, 76, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+/* 멤버십 패널 — 골드 그라데이션 보더 카드 */
+.membership-card {
+  background:
+    linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent-gold) 50%, transparent),
+        color-mix(in srgb, var(--accent-gold-soft) 50%, transparent)
+      )
+      border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 12px 50px color-mix(in srgb, var(--accent-gold) 14%, transparent);
+}
+/* 골드 글로우 텍스트(코인 숫자 등) */
+.gold-glow {
+  color: var(--accent-gold);
+  text-shadow: 0 0 26px rgba(245, 177, 76, 0.35);
 }
