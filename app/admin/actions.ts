@@ -105,3 +105,60 @@ export async function publishReply(formData: FormData) {
   if (error) console.error("[admin] reply 업데이트 실패:", error.message);
   revalidatePath("/admin");
 }
+
+// ─── 코인 충전 처리 (Phase 2) ──────────────────────────────────────────────
+function adminOk(token: string): boolean {
+  return verify(token, process.env.ADMIN_SECRET ?? "");
+}
+
+export async function grantTopup(formData: FormData) {
+  const cookieStore = await cookies();
+  if (!adminOk(cookieStore.get("admin_token")?.value ?? "")) redirect("/admin");
+  const id = formData.get("id");
+  if (typeof id !== "string" || !UUID_RE.test(id)) return;
+  // approve_topup: 신청 done + 코인 지급(원자적·중복방지)
+  const { error } = await getSupabase().rpc("approve_topup", { p_request_id: id });
+  if (error) console.error("[admin] approve_topup 실패:", error.message);
+  revalidatePath("/admin");
+}
+
+export async function rejectTopup(formData: FormData) {
+  const cookieStore = await cookies();
+  if (!adminOk(cookieStore.get("admin_token")?.value ?? "")) redirect("/admin");
+  const id = formData.get("id");
+  if (typeof id !== "string" || !UUID_RE.test(id)) return;
+  const { error } = await getSupabase()
+    .from("coin_topup_requests")
+    .update({ status: "rejected", processed_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "pending"); // 이미 처리된 건 건드리지 않음
+  if (error) console.error("[admin] rejectTopup 실패:", error.message);
+  revalidatePath("/admin");
+}
+
+export async function adjustCoins(formData: FormData) {
+  const cookieStore = await cookies();
+  if (!adminOk(cookieStore.get("admin_token")?.value ?? "")) redirect("/admin");
+  const email = ((formData.get("email") as string) ?? "").trim();
+  const delta = Number(formData.get("delta"));
+  const reason = (((formData.get("reason") as string) ?? "adjust").trim() || "adjust").slice(0, 40);
+  if (!email || !Number.isInteger(delta) || delta === 0) return;
+  const sb = getSupabase();
+  const { data: prof } = await sb
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .single();
+  if (!prof) {
+    console.error("[admin] adjustCoins: 회원 없음", email);
+    return;
+  }
+  const { error } = await sb.rpc("apply_coin_delta", {
+    p_user_id: prof.id,
+    p_delta: delta,
+    p_reason: reason,
+    p_ref_id: null,
+  });
+  if (error) console.error("[admin] adjustCoins 실패:", error.message);
+  revalidatePath("/admin");
+}

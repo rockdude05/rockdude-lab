@@ -8,7 +8,14 @@
 
 import { cookies } from "next/headers";
 import { verify } from "@/lib/admin-auth";
-import { login, updateStatus, publishReply } from "@/app/admin/actions";
+import {
+  login,
+  updateStatus,
+  publishReply,
+  grantTopup,
+  rejectTopup,
+  adjustCoins,
+} from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -173,6 +180,31 @@ export default async function AdminPage({
     done: "완료",
   };
 
+  // 코인 충전 신청 조회 (Phase 2)
+  let topups: {
+    id: string;
+    amount_won: number;
+    coins: number;
+    depositor: string;
+    status: string;
+    created_at: string;
+    profiles: { email: string } | null;
+  }[] = [];
+  try {
+    const { getSupabase: sb } = await import("@/lib/supabase");
+    const { data } = await sb()
+      .from("coin_topup_requests")
+      .select(
+        "id, amount_won, coins, depositor, status, created_at, profiles(email)",
+      )
+      .order("created_at", { ascending: false })
+      .limit(50);
+    topups = (data as unknown as typeof topups) ?? [];
+  } catch {
+    // Supabase 미설정 — 빈 목록
+  }
+  const pendingTopups = topups.filter((t) => t.status === "pending");
+
   return (
     <main
       className="min-h-screen px-6 py-12 max-w-4xl mx-auto"
@@ -184,6 +216,139 @@ export default async function AdminPage({
       >
         문의 관리
       </h1>
+
+      {/* ─── 코인 충전 관리 (Phase 2) ─── */}
+      <section className="mb-12">
+        <h2
+          className="text-lg font-semibold mb-4"
+          style={{ color: "var(--text-dim)" }}
+        >
+          충전 신청 ({pendingTopups.length} 대기)
+        </h2>
+        {pendingTopups.length === 0 && (
+          <p className="text-sm mb-4" style={{ color: "var(--text-dim)" }}>
+            대기 중인 충전 신청이 없습니다.
+          </p>
+        )}
+        <div className="flex flex-col gap-3">
+          {pendingTopups.map((t) => (
+            <div
+              key={t.id}
+              className="rounded-xl p-4 flex flex-wrap items-center gap-3"
+              style={{
+                background: "var(--bg-panel)",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+            >
+              <span
+                className="text-xs font-mono"
+                style={{ color: "var(--text-dim)" }}
+              >
+                {formatDate(t.created_at)}
+              </span>
+              <span
+                className="text-sm font-semibold"
+                style={{ color: "var(--text-main)" }}
+              >
+                {t.profiles?.email ?? "?"}
+              </span>
+              <span className="text-sm" style={{ color: "var(--text-dim)" }}>
+                입금자 {t.depositor}
+              </span>
+              <span
+                className="text-sm font-mono"
+                style={{ color: "var(--accent-gold)" }}
+              >
+                ₩{t.amount_won.toLocaleString()} → {t.coins}코인
+              </span>
+              <form action={grantTopup} className="ml-auto">
+                <input type="hidden" name="id" value={t.id} />
+                <button
+                  type="submit"
+                  className="cta-gold rounded-full px-4 py-1.5 text-sm font-medium"
+                >
+                  {t.coins}코인 지급
+                </button>
+              </form>
+              <form action={rejectTopup}>
+                <input type="hidden" name="id" value={t.id} />
+                <button
+                  type="submit"
+                  className="text-sm rounded-lg px-3 py-1.5"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    color: "var(--text-dim)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                  }}
+                >
+                  거절
+                </button>
+              </form>
+            </div>
+          ))}
+        </div>
+
+        {/* 회원 코인 수동 조정(환불·보정) */}
+        <details className="mt-6">
+          <summary
+            className="text-sm cursor-pointer select-none"
+            style={{ color: "var(--text-dim)" }}
+          >
+            회원 코인 조정 (환불·보정)
+          </summary>
+          <form
+            action={adjustCoins}
+            className="flex flex-wrap items-center gap-2 mt-3"
+          >
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="회원 이메일"
+              className="rounded-lg px-3 py-1.5 text-sm outline-none"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "var(--text-main)",
+              }}
+            />
+            <input
+              name="delta"
+              type="number"
+              required
+              placeholder="증감(+/-)"
+              className="rounded-lg px-3 py-1.5 text-sm outline-none w-28"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "var(--text-main)",
+              }}
+            />
+            <input
+              name="reason"
+              type="text"
+              placeholder="사유(예: refund)"
+              className="rounded-lg px-3 py-1.5 text-sm outline-none"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "var(--text-main)",
+              }}
+            />
+            <button
+              type="submit"
+              className="text-sm rounded-lg px-3 py-1.5"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                color: "var(--text-main)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              적용
+            </button>
+          </form>
+        </details>
+      </section>
 
       {inquiries.length === 0 && (
         <p style={{ color: "var(--text-dim)" }}>접수된 문의가 없습니다.</p>
