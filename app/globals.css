@@ -582,23 +582,40 @@ body {
   text-shadow: 0 0 26px rgba(245, 177, 76, 0.35);
 }
 
-/* 골드 회원 존 배경 — /membership·/dashboard 전용 따뜻한 다크(금과 어울림).
-   전역 바이올렛 오로라(GlowBackground, z-index:-1) 위에 렌더돼 덮음(불투명 베이스). */
-.zone-gold-bg {
+/* 골드 회원 존 분위기 — /membership·/dashboard 전용(GoldAtmosphere 컴포넌트).
+   전역 바이올렛 오로라 위에 렌더돼 덮음. warm 베이스 + 떠다니는 골드 글로우(자식 블롭) + 길로셰 무늬. */
+.gold-atmosphere {
   position: fixed;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(
-      ellipse 70% 52% at 50% -6%,
-      rgba(245, 177, 76, 0.11),
-      transparent 56%
+  background: #14110b;
+}
+/* 코인 테마 길로셰 무늬 — concentric ring 2겹 간섭(동전·지폐 각인 느낌), 중앙 밀집 mask 페이드 */
+.gold-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-radial-gradient(
+      circle at 38% 24%,
+      transparent 0,
+      transparent 15px,
+      rgba(245, 177, 76, 0.05) 15px,
+      rgba(245, 177, 76, 0.05) 16px
     ),
-    radial-gradient(
-      ellipse 64% 50% at 50% 106%,
-      rgba(232, 199, 122, 0.06),
-      transparent 56%
-    ),
-    #14110b;
+    repeating-radial-gradient(
+      circle at 64% 32%,
+      transparent 0,
+      transparent 15px,
+      rgba(232, 199, 122, 0.045) 15px,
+      rgba(232, 199, 122, 0.045) 16px
+    );
+  -webkit-mask: radial-gradient(
+    ellipse 88% 78% at 50% 30%,
+    #000 0%,
+    transparent 78%
+  );
+  mask: radial-gradient(ellipse 88% 78% at 50% 30%, #000 0%, transparent 78%);
 }

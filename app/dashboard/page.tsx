@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import SignOutButton from "@/components/dashboard/SignOutButton";
+import GoldAtmosphere from "@/components/membership/GoldAtmosphere";
 
 // 세션(쿠키) 의존 → 절대 정적 prerender 불가. build 시 prerender 차단.
 export const dynamic = "force-dynamic";
@@ -25,8 +26,8 @@ export default async function DashboardPage() {
 
   return (
     <>
-      {/* 골드 회원 존 — 따뜻한 다크 배경(전역 바이올렛 오로라를 덮음) */}
-      <div className="zone-gold-bg" aria-hidden="true" />
+      {/* 골드 회원 존 — 떠다니는 골드 글로우 + 길로셰 무늬(전역 바이올렛 오로라를 덮음) */}
+      <GoldAtmosphere />
       <SiteHeader />
       <main className="min-h-screen max-w-4xl mx-auto px-6 w-full pt-32 pb-24 flex flex-col gap-10">
         <div className="flex items-start justify-between gap-4">
