@@ -70,15 +70,25 @@ export default function AgentCard({ agent }: AgentCardProps) {
     setHovered(false);
   }
 
-  // 호버 시 accent 색상 보더+그림자
-  const hoverBorderColor = `color-mix(in srgb, ${accentVar} 40%, transparent)`;
-  const hoverBoxShadow = `0 8px 40px color-mix(in srgb, ${accentVar} 25%, transparent)`;
+  // 호버 시 accent 색상 그라데이션 보더 + 글로우 + 뒤 헤일로
+  // 📚 학습: .cta-glass와 같은 padding-box/border-box 이중 배경 트릭 →
+  // hover 시 1px 그라데이션 테두리(accent→purple). 비hover는 솔리드 바탕.
+  const hoverBackground = `linear-gradient(var(--bg-panel), var(--bg-panel)) padding-box, linear-gradient(135deg, ${accentVar}, var(--accent-purple)) border-box`;
+  const hoverBoxShadow = `0 10px 48px color-mix(in srgb, ${accentVar} 32%, transparent), inset 0 1px 0 rgba(255,255,255,0.08)`;
 
   return (
     // 📚 학습 포인트: revealItem variants를 motion.div에 적용하면
     // 부모 AgentGrid의 staggerChildren이 이 카드를 0.08s씩 지연 등장시킴
-    <motion.div variants={revealItem} className="h-full">
-      {/* 3D 틸트 컨테이너 */}
+    <motion.div variants={revealItem} className="relative h-full">
+      {/* accent 글로우 헤일로 — 카드 뒤, hover 시 색 블룸(--halo로 accent 주입) */}
+      <div
+        className={`card-halo ${hovered ? "is-on" : ""}`}
+        style={{
+          ["--halo" as string]: `color-mix(in srgb, ${accentVar} 55%, transparent)`,
+        }}
+        aria-hidden="true"
+      />
+      {/* 3D 틸트 컨테이너 — zIndex:1로 헤일로(z:0) 위에 고정 */}
       <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
@@ -88,10 +98,12 @@ export default function AgentCard({ agent }: AgentCardProps) {
           rotateX,
           rotateY,
           transformPerspective: 800,
-          background: "var(--bg-panel)",
-          border: `1px solid ${hovered ? hoverBorderColor : "rgba(255,255,255,0.07)"}`,
+          position: "relative",
+          zIndex: 1,
+          background: hovered ? hoverBackground : "var(--bg-panel)",
+          border: `1px solid ${hovered ? "transparent" : "rgba(255,255,255,0.07)"}`,
           boxShadow: hovered ? hoverBoxShadow : "none",
-          transition: "border-color 0.25s ease, box-shadow 0.25s ease",
+          transition: "box-shadow 0.25s ease",
         }}
         className="rounded-2xl overflow-hidden h-full flex flex-col"
       >
@@ -124,6 +136,11 @@ export default function AgentCard({ agent }: AgentCardProps) {
               background:
                 "linear-gradient(to bottom, transparent, var(--bg-panel))",
             }}
+          />
+          {/* sheen 스윕 — hover 시 대각 광택이 이미지를 가로질러 지나감 */}
+          <div
+            className={`card-sheen ${hovered ? "is-on" : ""}`}
+            aria-hidden="true"
           />
         </div>
 

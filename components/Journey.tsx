@@ -290,7 +290,7 @@ export default function Journey() {
           ~/journey
         </p>
         <h2
-          className="font-bold text-3xl md:text-4xl mb-3"
+          className="section-title-glow font-bold text-3xl md:text-4xl mb-3 break-keep"
           style={{ color: "var(--text-main)" }}
         >
           시험지 한 장의 여정
@@ -335,15 +335,15 @@ export default function Journey() {
             className="relative flex h-full"
             style={{ width: "336vw" }}
           >
-            {/* 여정 연결선 — 네 컷을 관통하는 점선 (카드 뒤) */}
+            {/* 여정 연결선 — 네 컷을 관통하는 흐르는 대시(violet, 카드 뒤) */}
             <div
               aria-hidden="true"
-              className="absolute pointer-events-none"
+              className="journey-connector absolute pointer-events-none"
               style={{
                 top: "44%",
                 left: "4vw",
                 width: "328vw",
-                borderTop: "2px dashed rgba(255,255,255,0.10)",
+                height: "2px",
               }}
             />
             {CUTS.map((cut, i) => {
@@ -375,7 +375,13 @@ export default function Journey() {
                     aria-hidden="true"
                     className="absolute font-bold select-none pointer-events-none text-[190px] md:text-[320px] leading-none"
                     style={{
-                      color: "rgba(255,255,255,0.055)",
+                      // 배경 워터마크 — 플랫 화이트알파 대신 은은한 바이올렛 그라데이션
+                      backgroundImage:
+                        "linear-gradient(180deg, rgba(108,99,255,0.12) 0%, rgba(108,99,255,0.02) 100%)",
+                      WebkitBackgroundClip: "text",
+                      backgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      color: "transparent",
                       top: "44%",
                       left: "50%",
                       transform: "translate(-50%, -88%)",
@@ -383,7 +389,17 @@ export default function Journey() {
                   >
                     {cut.num}
                   </span>
-                  <div className="relative scale-110 md:scale-125">
+                  {/* 활성 컷 강조 — 현재 컷 카드에 바이올렛 글로우(drop-shadow) */}
+                  <div
+                    className="relative scale-110 md:scale-125"
+                    style={{
+                      transition: "filter 0.4s ease",
+                      filter:
+                        i === activeIndex
+                          ? "drop-shadow(0 12px 40px rgba(108,99,255,0.45))"
+                          : "none",
+                    }}
+                  >
                     <CardComponent />
                   </div>
                   <div className="relative flex flex-col items-center gap-1.5">
@@ -422,6 +438,10 @@ export default function Journey() {
                       i === activeIndex
                         ? "var(--accent-purple)"
                         : "rgba(255,255,255,0.2)",
+                    boxShadow:
+                      i === activeIndex
+                        ? "0 0 12px var(--accent-purple)"
+                        : "none",
                   }}
                 />
               ))}

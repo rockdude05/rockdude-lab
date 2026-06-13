@@ -80,13 +80,11 @@ function StatItem({
   const count = useCountUp(value, started);
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* 숫자 + 접미사 */}
+    // 글래스 패널 — 상단 accent 바 + hover 글로우(globals.css .stat-panel)
+    <div className="stat-panel flex flex-col gap-2 p-5">
+      {/* 숫자 + 접미사 — 숫자에 바이올렛 그라데이션+글로우(.stat-number) */}
       <div className="flex items-end gap-1">
-        <span
-          className="font-mono text-4xl md:text-5xl font-bold leading-none"
-          style={{ color: "var(--text-main)" }}
-        >
+        <span className="stat-number font-mono text-4xl md:text-5xl font-bold leading-none">
           {count.toLocaleString()}
         </span>
         {suffix && (

@@ -48,7 +48,7 @@ export default function AgentGrid() {
 
         {/* H2 */}
         <h2
-          className="font-bold text-3xl md:text-4xl mb-3"
+          className="section-title-glow font-bold text-3xl md:text-4xl mb-3 break-keep"
           style={{ color: "var(--text-main)" }}
         >
           에이전트 &amp; 앱

@@ -235,3 +235,102 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
 }
+
+/* ─── 그리드/여정/Stats 화려화 (2026-06-13 라운드 2) ─────────────────────────── */
+
+/* 카드 이미지 sheen 스윕 — hover 시 대각 광택이 가로질러 지나감 */
+.card-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.14) 48%,
+    transparent 64%
+  );
+  transform: translateX(-110%);
+  transition: transform 0.7s ease;
+}
+.card-sheen.is-on {
+  transform: translateX(110%);
+}
+
+/* 카드 뒤 accent 글로우 헤일로 — hover 시 색 블룸 (색은 인라인 --halo로 주입) */
+.card-halo {
+  position: absolute;
+  inset: -14%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 24px;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 55%,
+    var(--halo, rgba(108, 99, 255, 0.5)) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  filter: blur(26px);
+  transition: opacity 0.3s ease;
+}
+.card-halo.is-on {
+  opacity: 1;
+}
+
+/* 여정 연결선 — 흐르는 대시(violet) */
+@keyframes journey-flow {
+  to { background-position: 200px 0; }
+}
+.journey-connector {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(108, 99, 255, 0.32) 0,
+    rgba(108, 99, 255, 0.32) 9px,
+    transparent 9px,
+    transparent 20px
+  );
+  background-size: 200px 2px;
+  animation: journey-flow 6s linear infinite;
+}
+
+/* Stats 숫자 — 바이올렛 그라데이션 + 글로우 (헤드라인 언어 재사용) */
+.stat-number {
+  background-image: linear-gradient(
+    135deg,
+    var(--text-main) 0%,
+    var(--accent-purple) 55%,
+    var(--accent-blue) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(108, 99, 255, 0.30));
+}
+
+/* Stats 글래스 패널 — 상단 accent 바 + hover 글로우 */
+.stat-panel {
+  position: relative;
+  background: color-mix(in srgb, var(--bg-panel) 70%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.stat-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+  opacity: 0.7;
+}
+.stat-panel:hover {
+  border-color: color-mix(in srgb, var(--accent-purple) 38%, transparent);
+  box-shadow: 0 8px 36px color-mix(in srgb, var(--accent-purple) 20%, transparent);
+  transform: translateY(-2px);
+}
+
+/* 섹션 헤딩 — 절제된 바이올렛 글로우(그라데이션 남발 대신 은은한 존재감) */
+.section-title-glow {
+  text-shadow: 0 0 26px rgba(108, 99, 255, 0.22);
+}
