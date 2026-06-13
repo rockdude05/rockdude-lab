@@ -4,6 +4,7 @@
 const NAV = [
   { href: "#agents", label: "에이전트" },
   { href: "#journey", label: "여정" },
+  { href: "/membership", label: "회원" },
   { href: "#inquiry", label: "문의" },
 ] as const;
 

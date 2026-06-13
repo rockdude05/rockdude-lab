@@ -6,6 +6,7 @@ import LiveRun from "@/components/hero/LiveRun";
 import AgentGrid from "@/components/AgentGrid";
 import Journey from "@/components/Journey";
 import Stats from "@/components/Stats";
+import MembershipTeaser from "@/components/MembershipTeaser";
 import InquiryForm from "@/components/InquiryForm";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -84,6 +85,9 @@ export default function Home() {
 
       {/* 지표 카운트업 섹션 */}
       <Stats />
+
+      {/* 멤버십(회원) 진입 배너 — 골드, /membership으로 유도 (R3F 없음 → perf 보호) */}
+      <MembershipTeaser />
 
       {/* 문의 폼 섹션 */}
       <InquiryForm />
