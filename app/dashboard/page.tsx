@@ -5,6 +5,8 @@ import SiteFooter from "@/components/SiteFooter";
 import SignOutButton from "@/components/dashboard/SignOutButton";
 import GoldAtmosphere from "@/components/membership/GoldAtmosphere";
 import TopupForm from "@/components/dashboard/TopupForm";
+import RunForm from "@/components/dashboard/RunForm";
+import RunHistory, { type RunRow } from "@/components/dashboard/RunHistory";
 import { AGENT_COSTS, coinsToWon } from "@/lib/coins";
 
 // 세션(쿠키) 의존 → 절대 정적 prerender 불가. build 시 prerender 차단.
@@ -32,6 +34,20 @@ export default async function DashboardPage() {
     .select("amount_won, coins, status, created_at")
     .order("created_at", { ascending: false })
     .limit(5);
+
+  // 실행 이력 (본인 — RLS) + 자식 존재 여부(무료 재요청 노출 판단)
+  const { data: runRows } = await supabase
+    .from("agent_runs")
+    .select("id, agent, cost, status, created_at, parent_run_id")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  const childParents = new Set(
+    (runRows ?? []).map((r) => r.parent_run_id).filter(Boolean),
+  );
+  const runs: RunRow[] = (runRows ?? []).map((r) => ({
+    ...r,
+    has_child: childParents.has(r.id),
+  }));
 
   return (
     <>
@@ -143,21 +159,22 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* 실행 이력 — Phase 3에서 agent_runs 연결 */}
+        {/* 에이전트 실행 */}
+        <div className="flex flex-col gap-3">
+          <h2 className="font-bold text-xl" style={{ color: "var(--text-main)" }}>
+            에이전트 실행
+          </h2>
+          <div className="membership-card rounded-2xl p-6">
+            <RunForm coins={coins} />
+          </div>
+        </div>
+
+        {/* 실행 이력 */}
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-xl" style={{ color: "var(--text-main)" }}>
             실행 이력
           </h2>
-          <div
-            className="rounded-2xl p-8 text-center text-sm"
-            style={{
-              background: "var(--bg-panel)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              color: "var(--text-dim)",
-            }}
-          >
-            아직 실행 내역이 없어요. (실행 기능은 곧 열립니다)
-          </div>
+          <RunHistory runs={runs} />
         </div>
       </main>
       <SiteFooter />

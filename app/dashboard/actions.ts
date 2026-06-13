@@ -47,3 +47,61 @@ export async function requestTopup(
   revalidatePath("/dashboard");
   return { ok: true };
 }
+
+export type RevisionState = { ok?: boolean; error?: string };
+
+// 무료 재요청(원본당 1회) — create_revision DB 함수가 규칙(부모 done·자식 없음) 강제.
+export async function requestRevision(
+  parentId: string,
+  note: string,
+): Promise<RevisionState> {
+  const supa = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supa.auth.getUser();
+  if (!user) return { error: "로그인이 필요합니다." };
+  const n = note.trim();
+  if (n.length < 5) return { error: "재요청 사항을 5자 이상 적어주세요." };
+
+  const { error } = await getSupabase().rpc("create_revision", {
+    p_user_id: user.id,
+    p_parent: parentId,
+    p_revision_note: n.slice(0, 2000),
+  });
+  if (error) {
+    const map: Record<string, string> = {
+      revision_used: "이미 무료 재요청을 사용했어요. 추가 수정은 문의로 부탁드려요.",
+      already_revision: "재요청본은 다시 재요청할 수 없어요.",
+      parent_not_done: "완료된 실행만 재요청할 수 있어요.",
+      not_owner: "본인 실행만 재요청할 수 있어요.",
+    };
+    const key = Object.keys(map).find((k) => error.message.includes(k));
+    return { error: key ? map[key] : "재요청에 실패했어요." };
+  }
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+// 결과 PDF 서명 URL — 본인 done run만(서버에서 user_id 대조).
+export async function getResultUrl(
+  runId: string,
+): Promise<{ url?: string; error?: string }> {
+  const supa = await createSupabaseServer();
+  const {
+    data: { user },
+  } = await supa.auth.getUser();
+  if (!user) return { error: "auth" };
+  const sb = getSupabase();
+  const { data: run } = await sb
+    .from("agent_runs")
+    .select("user_id, status, result_path")
+    .eq("id", runId)
+    .single();
+  if (!run || run.user_id !== user.id) return { error: "not_found" };
+  if (run.status !== "done" || !run.result_path) return { error: "not_ready" };
+  const { data, error } = await sb.storage
+    .from("run-results")
+    .createSignedUrl(run.result_path, 3600);
+  if (error || !data) return { error: "sign_failed" };
+  return { url: data.signedUrl };
+}
