@@ -43,6 +43,9 @@ export default function RootLayout({
         <MotionProvider>
           <GlowBackground />
           {children}
+          {/* 필름 그레인 오버레이 — 전역 고정, soft-light 미세 질감(globals.css .grain-overlay).
+              pointer-events:none이라 인터랙션 전부 통과. 콘텐츠 위·헤더(z-50) 아래. */}
+          <div className="grain-overlay" aria-hidden="true" />
         </MotionProvider>
       </body>
     </html>

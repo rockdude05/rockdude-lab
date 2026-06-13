@@ -57,27 +57,36 @@ body {
   transform: translateY(-1px);
 }
 
-/* GlowBackground 키프레임 — globals에 정의해 두면 서버 컴포넌트에서도 참조 가능 */
+/* 오로라 글로우 키프레임 — drift + scale 호흡(breathe).
+   📚 학습: translate로 떠다니고 scale로 "숨쉬게" 하면 정적 블롭이 살아있는 오로라가 됨.
+   주기는 길게(70~90s) 유지해 산만하지 않고 분위기로만 작동. reduced-motion이면 전역 룰이 0.01ms로 동결. */
 @keyframes glow-drift-1 {
-  0%   { transform: translate(0,    0); }
-  25%  { transform: translate(8vw,  4vw); }
-  50%  { transform: translate(4vw,  8vw); }
-  75%  { transform: translate(-5vw, 3vw); }
-  100% { transform: translate(0,    0); }
+  0%   { transform: translate(0,    0)   scale(1);    }
+  25%  { transform: translate(8vw,  4vw) scale(1.10); }
+  50%  { transform: translate(4vw,  8vw) scale(1.0);  }
+  75%  { transform: translate(-5vw, 3vw) scale(1.12); }
+  100% { transform: translate(0,    0)   scale(1);    }
 }
 
 @keyframes glow-drift-2 {
-  0%   { transform: translate(0,    0); }
-  33%  { transform: translate(-7vw, -5vw); }
-  66%  { transform: translate(6vw,  -3vw); }
-  100% { transform: translate(0,    0); }
+  0%   { transform: translate(0,    0)   scale(1.05); }
+  33%  { transform: translate(-7vw, -5vw) scale(1.0); }
+  66%  { transform: translate(6vw,  -3vw) scale(1.14);}
+  100% { transform: translate(0,    0)   scale(1.05); }
 }
 
 @keyframes glow-drift-3 {
-  0%   { transform: translate(0,    0); }
-  20%  { transform: translate(5vw,  -8vw); }
-  60%  { transform: translate(-6vw,  2vw); }
-  100% { transform: translate(0,    0); }
+  0%   { transform: translate(0,    0)   scale(1.0);  }
+  20%  { transform: translate(5vw,  -8vw) scale(1.12);}
+  60%  { transform: translate(-6vw,  2vw) scale(1.0); }
+  100% { transform: translate(0,    0)   scale(1.0);  }
+}
+
+@keyframes glow-drift-4 {
+  0%   { transform: translate(0,    0)    scale(1.08); }
+  30%  { transform: translate(6vw,   5vw) scale(1.0);  }
+  65%  { transform: translate(-4vw, -6vw) scale(1.13); }
+  100% { transform: translate(0,    0)    scale(1.08); }
 }
 
 /* LiveRun 터미널 — 블록 커서 깜빡임 */
@@ -108,4 +117,121 @@ body {
 }
 .scroll-hint-link:hover {
   color: var(--text-main);
+}
+
+/* ─── 히어로 화려화: Aurora + Grain (2026-06-13) ─────────────────────────────── */
+
+/* 📚 학습: 애니메이션 그라데이션 텍스트.
+   background-size 200%로 그라데이션을 박스보다 넓게 깔고 background-position을 스윕하면
+   글자 안에서 색이 흘러간다. 양끝 색을 같게(blue…blue) 만들어 이음매 없이 무한 루프. */
+.headline-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--accent-blue) 0%,
+    var(--accent-purple) 30%,
+    #a78bfa 50%,
+    var(--accent-purple) 70%,
+    var(--accent-blue) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* 글자 자체가 바이올렛 빛을 뿜도록 — drop-shadow는 클립된 글자 모양에 적용됨 */
+  filter: drop-shadow(0 0 22px rgba(108, 99, 255, 0.40));
+  animation: headline-shine 7s linear infinite;
+}
+@keyframes headline-shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* 로드 스태거 — 히어로 콘텐츠가 순차 fade-up.
+   📚 학습: page.tsx는 서버 컴포넌트라 JS 없이 CSS animation + inline animation-delay만으로 연출.
+   forwards로 끝 상태(opacity:1) 고정 → reduced-motion(전역 0.01ms)이면 즉시 최종 상태.
+   position:relative + z-index:1 → 절대배치 장식 레이어(z-index:0) 위로 콘텐츠가 항상 올라옴.
+   (nth-child 대신 요소별 .hero-rise 클래스 → 장식 div가 순번을 어긋나게 하지 않음) */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-rise {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: hero-fade-up 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 도트 그리드 매트릭스 — 중앙 밀집, 가장자리 mask로 소멸 → 깊이/텍스처 */
+.hero-dotgrid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    rgba(140, 130, 210, 0.18) 1px,
+    transparent 1.4px
+  );
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 72% 58% at 50% 42%,
+    #000 0%,
+    transparent 76%
+  );
+  mask-image: radial-gradient(
+    ellipse 72% 58% at 50% 42%,
+    #000 0%,
+    transparent 76%
+  );
+}
+
+/* 헤드라인 뒤 세로 바이올렛 블룸 — 텍스트가 빛을 뿜는 인상 */
+.hero-bloom {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: min(820px, 92vw);
+  height: min(560px, 70vh);
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 46% at 50% 50%,
+    rgba(108, 99, 255, 0.38) 0%,
+    rgba(124, 92, 255, 0.16) 38%,
+    transparent 72%
+  );
+  filter: blur(26px);
+}
+
+/* 터미널 패널 뒤 바이올렛 후광 — LiveRun을 브랜드 글로우로 감쌈 */
+.hero-terminal-halo {
+  position: absolute;
+  inset: -8% -6% -16% -6%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 58% 64% at 50% 56%,
+    rgba(108, 99, 255, 0.28) 0%,
+    rgba(77, 139, 255, 0.14) 42%,
+    transparent 72%
+  );
+  filter: blur(34px);
+}
+
+/* 필름 그레인 오버레이 — 전역 고정, soft-light로 미세 질감.
+   📚 학습: SVG feTurbulence를 data-uri로 인라인 → 외부 요청 0. pointer-events none이라
+   클릭은 전부 통과. opacity 매우 낮춰(0.04) 가독성 영향 없이 "프리미엄" 질감만 남김. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
 }
