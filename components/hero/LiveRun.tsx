@@ -220,9 +220,9 @@ export default function LiveRun() {
 
       {/* 터미널 패널 래퍼 — overflow visible로 아티팩트 오버행 허용, mb-16으로 CTA 충돌 방지 */}
       <div className="relative mb-16">
-        {/* 터미널 패널 */}
+        {/* 터미널 패널 — terminal-rim: 모서리를 천천히 도는 specular 림 */}
         <div
-          className="w-full rounded-2xl"
+          className="terminal-rim w-full rounded-2xl"
           style={{
             background: "#0d1117",
             border: "1px solid rgba(255,255,255,0.08)",

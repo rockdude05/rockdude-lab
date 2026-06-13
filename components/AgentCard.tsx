@@ -8,7 +8,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import type { Agent } from "@/content/agents";
 import { revealItem } from "@/components/SectionReveal";
 
@@ -48,6 +48,10 @@ export default function AgentCard({ agent }: AgentCardProps) {
   // 스프링 보간 — 자연스러운 물리 기반 틸트
   const rotateX = useSpring(rawRotateX, { stiffness: 150, damping: 20 });
   const rotateY = useSpring(rawRotateY, { stiffness: 150, damping: 20 });
+
+  // 📚 conic 림라이트 각도 — 기존 틸트 스프링을 useTransform으로 재배선(신규 이벤트·상태 0).
+  // 카드가 기울면 모서리를 흐르는 흰빛 specular의 각도가 따라 움직임. @property --angle이 보간.
+  const rimAngle = useTransform(rotateY, (v) => `${135 + v * 4}deg`);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const card = cardRef.current;
@@ -100,12 +104,14 @@ export default function AgentCard({ agent }: AgentCardProps) {
           transformPerspective: 800,
           position: "relative",
           zIndex: 1,
+          // conic 림라이트가 참조하는 각도 (틸트 스프링 연동)
+          ["--angle" as string]: rimAngle,
           background: hovered ? hoverBackground : "var(--bg-panel)",
           border: `1px solid ${hovered ? "transparent" : "rgba(255,255,255,0.07)"}`,
           boxShadow: hovered ? hoverBoxShadow : "none",
           transition: "box-shadow 0.25s ease",
         }}
-        className="rounded-2xl overflow-hidden h-full flex flex-col"
+        className={`card-rim ${hovered ? "is-on" : ""} rounded-2xl overflow-hidden h-full flex flex-col`}
       >
         {/* 1. 이미지 영역 — aspect-[4/3], fill로 반응형 이미지 최적화 */}
         {/* 📚 학습 포인트: fill+sizes로 반응형 이미지 최적화

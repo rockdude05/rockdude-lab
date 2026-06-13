@@ -298,7 +298,79 @@ body {
   transition: opacity 0.3s ease;
 }
 .card-halo.is-on {
-  opacity: 1;
+  opacity: 0.82; /* 빛 교환: specular 림 추가분만큼 헤일로 톤다운 */
+}
+
+/* conic 림라이트 — 틸트(--angle)에 따라 모서리를 흐르는 흰빛 specular.
+   "뒤에서 번지는 색"이 아니라 "표면이 잡는 빛". mask 링 트릭으로 1.5px 테두리만. */
+.card-rim::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--rim-width);
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    var(--rim-tint) 36deg,
+    transparent 96deg,
+    transparent 232deg,
+    color-mix(in srgb, var(--accent-purple) 45%, transparent) 286deg,
+    transparent 332deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.card-rim.is-on::before {
+  opacity: var(--spec-intensity);
+}
+
+/* 터미널 패널 림 — 빛이 모서리를 천천히 도는 specular(auto-orbit, 신규 JS 0).
+   포인터 추적 대신 자동 궤도 → 모바일 동일·가벼움. reduced-motion이면 전역 0.01ms로 정지(정적 림). */
+.terminal-rim {
+  position: relative;
+}
+.terminal-rim::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--rim-width);
+  background: conic-gradient(
+    from var(--a),
+    transparent 0deg,
+    var(--rim-tint) 30deg,
+    transparent 84deg,
+    transparent 250deg,
+    color-mix(in srgb, var(--accent-blue) 42%, transparent) 300deg,
+    transparent 342deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: rim-orbit 14s linear infinite;
+}
+@keyframes rim-orbit {
+  to {
+    --a: 360deg;
+  }
 }
 
 /* 여정 연결선 — 흐르는 대시(violet) */
