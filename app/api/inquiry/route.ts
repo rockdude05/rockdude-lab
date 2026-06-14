@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseInquiry } from "@/lib/inquiry-schema";
+import { parseInquiry, INQUIRY_LABELS } from "@/lib/inquiry-schema";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { getSupabase } from "@/lib/supabase";
 import { sendTelegram } from "@/lib/telegram";
@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
 
   const attachNote = fileEntries.length > 0 ? ` 📎${fileEntries.length}개` : "";
   await sendTelegram(
-    `💌 새 문의 [${parsed.data.type}] ${parsed.data.name}${attachNote}\n${parsed.data.body.slice(0, 300)}`
+    `💌 새 문의 [${INQUIRY_LABELS[parsed.data.type]}] ${parsed.data.name}${attachNote}\n${parsed.data.body.slice(0, 300)}`
   );
   return NextResponse.json({ ok: true, code: access_code });
 }

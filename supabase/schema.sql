@@ -1,7 +1,8 @@
 create table inquiries (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  type text not null check (type in ('try','idea','request','bug')),
+  -- 'idea'는 레거시(현재 UI 미제공, 'review'로 대체) — 무중단 위해 제약에 잔존 허용. (0004 참조)
+  type text not null check (type in ('try','idea','review','request','bug')),
   name text not null,
   contact text not null default '',
   body text not null,

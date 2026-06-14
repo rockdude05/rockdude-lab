@@ -3,13 +3,10 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { normalizeAccessCode } from "@/lib/access-code";
 import { getSupabase } from "@/lib/supabase";
+import { INQUIRY_LABELS } from "@/lib/inquiry-schema";
 
-const TYPE_LABELS: Record<string, string> = {
-  try: "써보고 싶어요",
-  idea: "아이디어",
-  request: "새 에이전트 요청",
-  bug: "버그·질문",
-};
+// 라벨 단일 출처(inquiry-schema). 미매핑 레거시 값은 호출부에서 raw로 폴백.
+const TYPE_LABELS: Record<string, string> = INQUIRY_LABELS;
 
 const STATUS_LABELS: Record<string, string> = {
   new: "접수됨",

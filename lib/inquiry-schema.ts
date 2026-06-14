@@ -1,5 +1,12 @@
 import { z } from "zod";
-export const INQUIRY_TYPES = ["try", "idea", "request", "bug"] as const; // 써보고싶어요/아이디어/새 에이전트 요청/버그·질문
+export const INQUIRY_TYPES = ["try", "review", "request", "bug"] as const; // 써보고싶어요/리뷰/새 에이전트 요청/버그·질문
+// 한글 라벨 단일 출처 — 폼·상태조회·김비서 텔레그램 메시지가 공유(라벨 중복 방지).
+export const INQUIRY_LABELS: Record<(typeof INQUIRY_TYPES)[number], string> = {
+  try: "써보고 싶어요",
+  review: "리뷰",
+  request: "새 에이전트 요청",
+  bug: "버그·질문",
+};
 const schema = z.object({
   type: z.enum(INQUIRY_TYPES),
   name: z.string().min(1).max(40),

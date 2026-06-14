@@ -17,7 +17,7 @@ describe("parseInquiry", () => {
     if (r.ok) expect(r.data.contact).toBe("friend@example.com");
   });
   it("honeypot(website) 채워지면 silent-reject", () => {
-    const r = parseInquiry({ type: "idea", name: "bot", contact: "bot@spam.com", body: "spam spam spam spam", website: "http://spam" });
+    const r = parseInquiry({ type: "review", name: "bot", contact: "bot@spam.com", body: "spam spam spam spam", website: "http://spam" });
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.reason).toBe("honeypot");
   });

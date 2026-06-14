@@ -3,16 +3,14 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionReveal, { revealItem } from "@/components/SectionReveal";
-import type { INQUIRY_TYPES } from "@/lib/inquiry-schema";
+import { INQUIRY_TYPES, INQUIRY_LABELS } from "@/lib/inquiry-schema";
 
 type InquiryType = (typeof INQUIRY_TYPES)[number];
 
-const CHIPS: { value: InquiryType; label: string }[] = [
-  { value: "try", label: "써보고 싶어요" },
-  { value: "idea", label: "아이디어" },
-  { value: "request", label: "새 에이전트 요청" },
-  { value: "bug", label: "버그·질문" },
-];
+// 라벨은 inquiry-schema 단일 출처에서 — 칩 순서 = INQUIRY_TYPES 순서.
+const CHIPS: { value: InquiryType; label: string }[] = INQUIRY_TYPES.map(
+  (value) => ({ value, label: INQUIRY_LABELS[value] }),
+);
 
 type Status = "idle" | "sending" | "success" | "error" | "ratelimit";
 
