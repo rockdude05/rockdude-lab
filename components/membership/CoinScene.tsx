@@ -1,6 +1,6 @@
 "use client";
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, Lightformer } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import Coin from "./Coin";
 import CoinRig from "./CoinRig";
@@ -34,10 +34,36 @@ export default function CoinScene({
       gl={{ antialias: true, powerPreference: "high-performance", alpha: true }}
       style={{ width: "100%", height: "100%" }}
     >
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.35} />
       <directionalLight position={[2, 3, 4]} intensity={1.6} color="#fff3da" />
       <directionalLight position={[-3, -1, 2]} intensity={0.5} color="#6c63ff" />
-      <Environment preset="studio" />
+      {/* 절차적 스튜디오 환경 — 외부 HDR CDN 의존 제거(오프라인·차단에도 금속 반사 보장). */}
+      <Environment resolution={256}>
+        <Lightformer
+          intensity={3}
+          position={[0, 2, 5]}
+          scale={[8, 6, 1]}
+          color="#fff3da"
+        />
+        <Lightformer
+          intensity={1.4}
+          position={[-4, 1, 3]}
+          scale={[4, 5, 1]}
+          color="#ffd58a"
+        />
+        <Lightformer
+          intensity={0.8}
+          position={[3, -2, 2]}
+          scale={[5, 4, 1]}
+          color="#ffe9c2"
+        />
+        <Lightformer
+          intensity={0.5}
+          position={[0, -3, -4]}
+          scale={[8, 8, 1]}
+          color="#6c63ff"
+        />
+      </Environment>
       <CoinRig reduced={reduced} interactive={interactive} scrollRef={scroll}>
         <Coin gold={gold} roughness={roughness} />
       </CoinRig>

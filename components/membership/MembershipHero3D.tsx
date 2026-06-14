@@ -39,11 +39,19 @@ export default function MembershipHero3D() {
   const [reduced, setReduced] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [webgl, setWebgl] = useState(true);
+  // 톤 비교용 — ?gold=f0a830 등으로 라이브 전환(gate ①). 미지정 시 기본 웜골드.
+  const [gold, setGold] = useState("#f5b14c");
+  const [still, setStill] = useState(false); // ?still=1 → 회전 정지(정면 캡처용)
 
   useEffect(() => {
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const sp = new URLSearchParams(window.location.search);
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReduced(prefersReduced);
     setMobile(window.innerWidth < 768);
     setWebgl(hasWebGL());
+    const q = sp.get("gold");
+    if (q && /^[0-9a-fA-F]{6}$/.test(q)) setGold(`#${q}`);
+    setStill(sp.get("still") === "1");
     const el = box.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -60,7 +68,7 @@ export default function MembershipHero3D() {
     <div ref={box} style={{ width: "100%", height: 320, position: "relative" }}>
       {show3D ? (
         <CoinErrorBoundary>
-          <CoinScene reduced={false} interactive={!mobile} />
+          <CoinScene reduced={still} interactive={!mobile && !still} gold={gold} />
         </CoinErrorBoundary>
       ) : (
         <CoinFallback />
