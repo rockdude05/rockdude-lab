@@ -11,12 +11,14 @@ export default function CoinScene({
   gold = "#f0a830",
   roughness = 0.3,
   poseYaw = null,
+  rimStyle = "knurl",
 }: {
   reduced?: boolean;
   interactive?: boolean;
   gold?: string;
   roughness?: number;
   poseYaw?: number | null;
+  rimStyle?: string;
 }) {
   const scroll = useRef(0);
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function CoinScene({
         />
       </Environment>
       <CoinRig reduced={reduced} interactive={interactive} scrollRef={scroll} poseYaw={poseYaw}>
-        <Coin gold={gold} roughness={roughness} />
+        <Coin gold={gold} roughness={roughness} rimStyle={rimStyle} />
       </CoinRig>
     </Canvas>
   );

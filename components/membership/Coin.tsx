@@ -88,21 +88,6 @@ function useHaloTextures() {
     dx.fill();
     const dotEmissive = new THREE.CanvasTexture(d);
 
-    // ── rimBump: fine, restrained vertical reeding for the edge ──────────────
-    const w = 2048;
-    const r = document.createElement("canvas");
-    r.width = w;
-    r.height = 8;
-    const rx = r.getContext("2d")!;
-    const reeds = 168;
-    for (let x = 0; x < w; x++) {
-      const v = Math.round(((Math.cos((x / w) * reeds * Math.PI * 2) + 1) / 2) * 255);
-      rx.fillStyle = `rgb(${v},${v},${v})`;
-      rx.fillRect(x, 0, 1, 8);
-    }
-    const rimBump = new THREE.CanvasTexture(r);
-    rimBump.wrapS = rimBump.wrapT = THREE.RepeatWrapping;
-
     // ── haloGlow: a radial-soft white band on black, used as the emissiveMap
     //    for the recessed channel torus so the violet light feathers softly. ──
     const hg = document.createElement("canvas");
@@ -119,8 +104,82 @@ function useHaloTextures() {
     const haloGlow = new THREE.CanvasTexture(hg);
     haloGlow.wrapS = haloGlow.wrapT = THREE.RepeatWrapping;
 
-    return { glyph, glyphBump, dotEmissive, rimBump, haloGlow };
+    return { glyph, glyphBump, dotEmissive, haloGlow };
   }, []);
+}
+
+// 림(옆면) 높이맵 — edge 무늬 선택:
+//  reed=미세 수직 빗금(클래식) · knurl=다이아 격자(크로스해치) · rope=대각 트위스트
+//  · segment=분절 빗금(빗금 묶음+매끈 밴드) · bead=비드(구슬) 가장자리
+function makeRimBump(style: string): THREE.CanvasTexture {
+  const w = 1024;
+  const h = 128;
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.fillStyle = "#7a7a7a"; // 평탄 베이스(중간 높이)
+  ctx.fillRect(0, 0, w, h);
+
+  if (style === "bead") {
+    const cols = 84;
+    const rows = 3;
+    const cw = w / cols;
+    const ch = h / rows;
+    const rad = Math.min(cw, ch) * 0.42;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const cx = (i + 0.5) * cw;
+        const cy = (j + 0.5) * ch;
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+        g.addColorStop(0, "#ededed");
+        g.addColorStop(1, "#5f5f5f");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  } else {
+    const img = ctx.getImageData(0, 0, w, h);
+    const data = img.data;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const u = x / w;
+        const t = y / h;
+        let v = 128;
+        if (style === "knurl") {
+          const nx = 80;
+          const ny = 4;
+          const a = Math.cos(2 * Math.PI * (u * nx + t * ny));
+          const b = Math.cos(2 * Math.PI * (u * nx - t * ny));
+          v = 128 + 80 * ((a + b) / 2);
+        } else if (style === "rope") {
+          const nx = 72;
+          const ny = 5;
+          v = 128 + 110 * Math.cos(2 * Math.PI * (u * nx + t * ny));
+        } else if (style === "segment") {
+          const segs = 18;
+          const reedsPer = 4;
+          const frac = u * segs - Math.floor(u * segs);
+          v = frac < 0.7 ? 128 + 95 * Math.cos(2 * Math.PI * reedsPer * (frac / 0.7)) : 128;
+        } else {
+          // reed (기본)
+          const reeds = 168;
+          v = 128 + 110 * Math.cos(2 * Math.PI * reeds * u);
+        }
+        const vi = Math.max(0, Math.min(255, Math.round(v)));
+        const idx = (y * w + x) * 4;
+        data[idx] = data[idx + 1] = data[idx + 2] = vi;
+        data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
 }
 
 // A revolved profile for one DOMED face: a flat central plateau (so the "r."
@@ -153,11 +212,14 @@ function makeDomeGeometry(
 export default function Coin({
   gold = "#f0a830",
   roughness = 0.3,
+  rimStyle = "knurl",
 }: {
   gold?: string;
   roughness?: number;
+  rimStyle?: string;
 }) {
-  const { glyph, glyphBump, dotEmissive, rimBump, haloGlow } = useHaloTextures();
+  const { glyph, glyphBump, dotEmissive, haloGlow } = useHaloTextures();
+  const rimBump = useMemo(() => makeRimBump(rimStyle), [rimStyle]);
 
   const R = 1.2; // overall coin radius
   const H = 0.3; // body thickness
@@ -176,7 +238,7 @@ export default function Coin({
         metalness: 1,
         roughness: roughness * 1.05,
         bumpMap: rimBump,
-        bumpScale: 0.045,
+        bumpScale: 0.09,
       }),
     [gold, roughness, rimBump],
   );

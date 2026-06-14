@@ -43,6 +43,7 @@ export default function MembershipHero3D() {
   const [gold, setGold] = useState("#f0a830");
   const [still, setStill] = useState(false); // ?still=1 → 회전 정지(정면 캡처용)
   const [poseYaw, setPoseYaw] = useState<number | null>(null); // ?yaw=deg → 고정 3/4 포즈(QA)
+  const [rimStyle, setRimStyle] = useState("knurl"); // ?rim=knurl|rope|segment|bead|reed (QA/확정)
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -55,6 +56,8 @@ export default function MembershipHero3D() {
     setStill(sp.get("still") === "1");
     const y = sp.get("yaw");
     if (y != null && y !== "" && !Number.isNaN(Number(y))) setPoseYaw((Number(y) * Math.PI) / 180);
+    const rim = sp.get("rim");
+    if (rim && ["knurl", "rope", "segment", "bead", "reed"].includes(rim)) setRimStyle(rim);
     const el = box.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -76,6 +79,7 @@ export default function MembershipHero3D() {
             interactive={!mobile && !still && poseYaw == null}
             gold={gold}
             poseYaw={poseYaw}
+            rimStyle={rimStyle}
           />
         </CoinErrorBoundary>
       ) : (
