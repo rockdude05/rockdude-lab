@@ -32,13 +32,13 @@ function useHaloTextures() {
     gx.clearRect(0, 0, s, s);
     gx.textAlign = "center";
     gx.textBaseline = "middle";
-    gx.font = "600 460px Menlo, ui-monospace, SFMono-Regular, monospace";
+    gx.font = "600 540px Menlo, ui-monospace, SFMono-Regular, monospace";
     gx.fillStyle = "#fff3d2";
-    gx.fillText("r", s / 2 - 70, s / 2 - 70);
+    gx.fillText("r", s / 2 - 80, s / 2 - 50);
     // crisp violet period — the accent
     gx.fillStyle = VIOLET_HI;
     gx.beginPath();
-    gx.arc(s / 2 + 150, s / 2 + 72, 58, 0, Math.PI * 2);
+    gx.arc(s / 2 + 172, s / 2 + 96, 66, 0, Math.PI * 2);
     gx.fill();
     const glyph = new THREE.CanvasTexture(g);
     glyph.anisotropy = 8;
@@ -52,11 +52,11 @@ function useHaloTextures() {
     gbx.fillRect(0, 0, s, s);
     gbx.textAlign = "center";
     gbx.textBaseline = "middle";
-    gbx.font = "600 460px Menlo, ui-monospace, SFMono-Regular, monospace";
+    gbx.font = "600 540px Menlo, ui-monospace, SFMono-Regular, monospace";
     gbx.fillStyle = "#fff";
-    gbx.fillText("r", s / 2 - 70, s / 2 - 70);
+    gbx.fillText("r", s / 2 - 80, s / 2 - 50);
     gbx.beginPath();
-    gbx.arc(s / 2 + 150, s / 2 + 72, 58, 0, Math.PI * 2);
+    gbx.arc(s / 2 + 172, s / 2 + 96, 66, 0, Math.PI * 2);
     gbx.fill();
     const glyphBump = new THREE.CanvasTexture(gb);
 
@@ -68,23 +68,23 @@ function useHaloTextures() {
     dx.fillRect(0, 0, s, s);
     // soft violet bloom around the period so the accent feels lit, not painted
     const grad = dx.createRadialGradient(
-      s / 2 + 150,
-      s / 2 + 72,
+      s / 2 + 172,
+      s / 2 + 96,
       6,
-      s / 2 + 150,
-      s / 2 + 72,
-      120,
+      s / 2 + 172,
+      s / 2 + 96,
+      135,
     );
     grad.addColorStop(0, "#ffffff");
     grad.addColorStop(0.45, "#9a90ff");
     grad.addColorStop(1, "#000000");
     dx.fillStyle = grad;
     dx.beginPath();
-    dx.arc(s / 2 + 150, s / 2 + 72, 120, 0, Math.PI * 2);
+    dx.arc(s / 2 + 172, s / 2 + 96, 135, 0, Math.PI * 2);
     dx.fill();
     dx.fillStyle = "#ffffff";
     dx.beginPath();
-    dx.arc(s / 2 + 150, s / 2 + 72, 58, 0, Math.PI * 2);
+    dx.arc(s / 2 + 172, s / 2 + 96, 66, 0, Math.PI * 2);
     dx.fill();
     const dotEmissive = new THREE.CanvasTexture(d);
 
@@ -163,7 +163,7 @@ export default function Coin({
   const H = 0.3; // body thickness
   const half = H / 2;
   const channelR = 1.02; // radius of the recessed halo channel
-  const plateauR = 0.74; // flat zone radius for the wordmark
+  const plateauR = 0.86; // flat zone radius for the wordmark (enlarged)
   const domeRise = 0.07; // how far the dome rises above the body cap
 
   // ── Materials ─────────────────────────────────────────────────────────────
@@ -254,8 +254,9 @@ export default function Coin({
     [plateauR, channelR, domeRise],
   );
 
-  // Position the inlay just above the flat plateau so the emboss clears the dome.
-  const inlayZ = half + domeRise + 0.001;
+  // 인레이는 면 그룹(±half) 안의 평탄 plateau 바로 위. 국소 z = domeRise+epsilon (이전 버그:
+  // half를 이중 가산해 면보다 한참 앞에 떠 있었음 → 회전 시 'r.'이 분리돼 보임).
+  const inlayLocalZ = domeRise + 0.001;
 
   return (
     <group>
@@ -264,10 +265,9 @@ export default function Coin({
         <cylinderGeometry args={[R, R, H, 160]} />
       </mesh>
 
-      {/* ── FRONT (+Z) ──────────────────────────────────────────────────── */}
+      {/* ── FRONT (+Z) — 볼록 돔: lathe +Y → +Z (rotation +PI/2) ──────────── */}
       <group position={[0, 0, half]}>
-        {/* domed polished face — lathe axis (+Y) rotated to +Z */}
-        <mesh geometry={domeGeo} rotation={[-Math.PI / 2, 0, 0]} material={domeMat} castShadow />
+        <mesh geometry={domeGeo} rotation={[Math.PI / 2, 0, 0]} material={domeMat} castShadow />
 
         {/* recessed trench just inside the rim (dark ring → channel illusion) */}
         <mesh position={[0, 0, 0.004]} material={trenchMat}>
@@ -279,25 +279,25 @@ export default function Coin({
           <torusGeometry args={[channelR, 0.022, 16, 220]} />
         </mesh>
 
-        {/* deeply embossed "r." inlay on the flat plateau */}
-        <mesh position={[0, 0, inlayZ]} material={inlayMat}>
+        {/* deeply embossed "r." inlay, flush on the raised plateau */}
+        <mesh position={[0, 0, inlayLocalZ]} material={inlayMat}>
           <circleGeometry args={[plateauR, 96]} />
         </mesh>
       </group>
 
-      {/* ── BACK (-Z) — mirrored ────────────────────────────────────────── */}
-      <group position={[0, 0, -half]} rotation={[0, Math.PI, 0]}>
+      {/* ── BACK (-Z) — 볼록 돔: lathe +Y → -Z (rotation -PI/2), 인레이 후면향 ── */}
+      <group position={[0, 0, -half]}>
         <mesh geometry={domeGeo} rotation={[-Math.PI / 2, 0, 0]} material={domeMat} castShadow />
 
-        <mesh position={[0, 0, 0.004]} material={trenchMat}>
+        <mesh position={[0, 0, -0.004]} material={trenchMat}>
           <ringGeometry args={[channelR - 0.05, channelR + 0.05, 160]} />
         </mesh>
 
-        <mesh position={[0, 0, 0.012]} material={haloMat}>
+        <mesh position={[0, 0, -0.012]} material={haloMat}>
           <torusGeometry args={[channelR, 0.022, 16, 220]} />
         </mesh>
 
-        <mesh position={[0, 0, inlayZ]} material={inlayMat}>
+        <mesh position={[0, 0, -inlayLocalZ]} rotation={[0, Math.PI, 0]} material={inlayMat}>
           <circleGeometry args={[plateauR, 96]} />
         </mesh>
       </group>
