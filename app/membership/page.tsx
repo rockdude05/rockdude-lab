@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import LoginPanel from "@/components/membership/LoginPanel";
 import GoldAtmosphere from "@/components/membership/GoldAtmosphere";
+import MembershipHero3D from "@/components/membership/MembershipHero3D";
 
 // 세션(쿠키) 의존 → 절대 정적 prerender 불가. build 시 prerender 차단.
 export const dynamic = "force-dynamic";
@@ -24,6 +25,10 @@ export default async function MembershipPage() {
       <SiteHeader />
       <main className="min-h-screen flex flex-col items-center justify-center max-w-2xl mx-auto px-6 w-full pt-32 pb-24 gap-8">
         <div className="flex flex-col items-center gap-3 text-center">
+          {/* Phase 4 — R3F 3D 골드 코인 히어로 (lazy 마운트, reduced-motion/모바일 폴백) */}
+          <div className="w-full max-w-md">
+            <MembershipHero3D />
+          </div>
           <p
             className="font-mono text-sm tracking-widest"
             style={{ color: "var(--accent-gold)" }}
