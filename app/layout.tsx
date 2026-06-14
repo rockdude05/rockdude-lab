@@ -3,6 +3,7 @@ import "./globals.css";
 import "./fonts.css";
 import GlowBackground from "@/components/GlowBackground";
 import MotionProvider from "@/components/MotionProvider";
+import AuthHashHandler from "@/components/AuthHashHandler";
 
 // 📚 학습: Next.js Metadata API — app/opengraph-image.png, app/icon.svg를
 // 같은 폴더에 두면 OG 태그·파비콘 link가 자동 생성됨 (파일 규약 기반)
@@ -41,6 +42,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <MotionProvider>
+          <AuthHashHandler />
           <GlowBackground />
           {children}
           {/* 필름 그레인 오버레이 — 전역 고정, soft-light 미세 질감(globals.css .grain-overlay).
