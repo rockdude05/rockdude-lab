@@ -74,7 +74,7 @@ export default function Coin({
         metalness: 1,
         roughness: roughness * 1.1,
         bumpMap: rimBump,
-        bumpScale: 0.025,
+        bumpScale: 0.05,
       }),
     [gold, roughness, rimBump],
   );
@@ -109,14 +109,14 @@ export default function Coin({
         material={[rimMat, capMat, capMat]}
         castShadow
       >
-        <cylinderGeometry args={[1.2, 1.2, 0.2, 96]} />
+        <cylinderGeometry args={[1.2, 1.2, 0.3, 96]} />
       </mesh>
       {/* 앞면 'r.' 인레이 */}
-      <mesh position={[0, 0, 0.1005]} material={inlayMat}>
+      <mesh position={[0, 0, 0.1505]} material={inlayMat}>
         <circleGeometry args={[1.12, 64]} />
       </mesh>
       {/* 뒷면 'r.' 인레이 (바깥 향함) */}
-      <mesh position={[0, 0, -0.1005]} rotation={[0, Math.PI, 0]} material={inlayMat}>
+      <mesh position={[0, 0, -0.1505]} rotation={[0, Math.PI, 0]} material={inlayMat}>
         <circleGeometry args={[1.12, 64]} />
       </mesh>
     </group>
