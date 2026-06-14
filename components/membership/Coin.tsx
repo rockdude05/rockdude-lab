@@ -2,70 +2,121 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 
-// 'r.' 브랜드 마크를 투명 캔버스에 그림 — 글자=밝은 골드, 마침표=바이올렛(브랜드 악센트).
-// 코인 면에 얹는 인레이(원판)용 텍스처. 면의 cap UV 대신 평면 원판 UV를 써서 중앙·정립 제어.
-function useGlyphTexture() {
+// 코인용 캔버스 텍스처 3종:
+//  - glyph: 'r.' 마크 (map + bumpMap=양각). 글자=크림골드, 점=바이올렛.
+//  - dotEmissive: 마침표만 흰색(나머지 검정) → emissiveMap. 점이 바이올렛으로 은은히 발광.
+//  - rimBump: 림(옆면) 빗금(reeding) 높이맵 — 실제 주화의 톱니 가장자리.
+function useCoinTextures() {
   return useMemo(() => {
     const s = 512;
-    const c = document.createElement("canvas");
-    c.width = c.height = s;
-    const ctx = c.getContext("2d")!;
-    ctx.clearRect(0, 0, s, s); // 투명 배경
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    // 'r' — 밝은 크림골드 (마크 중심을 면 중앙에 맞춰 살짝 위로)
-    ctx.font = "700 250px Menlo, ui-monospace, monospace";
-    ctx.fillStyle = "#fff4d6";
-    ctx.fillText("r", s / 2 - 34, s / 2 - 40);
-    // '.' — 바이올렛 마침표 (r의 베이스라인 우하단)
-    ctx.fillStyle = "#7b6bff";
-    ctx.beginPath();
-    ctx.arc(s / 2 + 74, s / 2 + 40, 32, 0, Math.PI * 2);
-    ctx.fill();
-    const tex = new THREE.CanvasTexture(c);
-    tex.anisotropy = 8;
-    tex.needsUpdate = true;
-    return tex;
+    // --- glyph ---
+    const g = document.createElement("canvas");
+    g.width = g.height = s;
+    const gx = g.getContext("2d")!;
+    gx.clearRect(0, 0, s, s);
+    gx.textAlign = "center";
+    gx.textBaseline = "middle";
+    gx.font = "700 250px Menlo, ui-monospace, monospace";
+    gx.fillStyle = "#fff4d6";
+    gx.fillText("r", s / 2 - 34, s / 2 - 40);
+    gx.fillStyle = "#7b6bff";
+    gx.beginPath();
+    gx.arc(s / 2 + 74, s / 2 + 40, 32, 0, Math.PI * 2);
+    gx.fill();
+    const glyph = new THREE.CanvasTexture(g);
+    glyph.anisotropy = 8;
+
+    // --- dot emissive (마침표만) ---
+    const d = document.createElement("canvas");
+    d.width = d.height = s;
+    const dx = d.getContext("2d")!;
+    dx.fillStyle = "#000";
+    dx.fillRect(0, 0, s, s);
+    dx.fillStyle = "#fff";
+    dx.beginPath();
+    dx.arc(s / 2 + 74, s / 2 + 40, 32, 0, Math.PI * 2);
+    dx.fill();
+    const dotEmissive = new THREE.CanvasTexture(d);
+
+    // --- rim reeding (수직 톱니 높이맵) ---
+    const w = 1024;
+    const r = document.createElement("canvas");
+    r.width = w;
+    r.height = 8;
+    const rx = r.getContext("2d")!;
+    const reeds = 130;
+    for (let x = 0; x < w; x++) {
+      const v = Math.round(((Math.cos((x / w) * reeds * Math.PI * 2) + 1) / 2) * 255);
+      rx.fillStyle = `rgb(${v},${v},${v})`;
+      rx.fillRect(x, 0, 1, 8);
+    }
+    const rimBump = new THREE.CanvasTexture(r);
+    rimBump.wrapS = rimBump.wrapT = THREE.RepeatWrapping;
+
+    return { glyph, dotEmissive, rimBump };
   }, []);
 }
 
 export default function Coin({
-  gold = "#f5b14c",
+  gold = "#f0a830",
   roughness = 0.3,
 }: {
   gold?: string;
   roughness?: number;
 }) {
-  const glyph = useGlyphTexture();
-  const goldMat = useMemo(
+  const { glyph, dotEmissive, rimBump } = useCoinTextures();
+
+  // 림(옆면) — 빗금 양각
+  const rimMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: gold,
+        metalness: 1,
+        roughness: roughness * 1.1,
+        bumpMap: rimBump,
+        bumpScale: 0.025,
+      }),
+    [gold, roughness, rimBump],
+  );
+  // 면(앞/뒤 캡) — 매끈한 골드
+  const capMat = useMemo(
     () => new THREE.MeshStandardMaterial({ color: gold, metalness: 1, roughness }),
     [gold, roughness],
   );
-  // 인레이: 투명 원판 위 'r.' — 금속 광택 살짝 더(roughness↓). color=white라 map 색 그대로.
+  // 'r.' 인레이 — 양각(bumpMap) + 마침표 바이올렛 발광(emissive)
   const inlayMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
         map: glyph,
+        bumpMap: glyph,
+        bumpScale: 0.035,
         transparent: true,
         metalness: 1,
         roughness: roughness * 0.7,
         color: "#ffffff",
+        emissive: new THREE.Color("#6c63ff"),
+        emissiveMap: dotEmissive,
+        emissiveIntensity: 1.7,
       }),
-    [glyph, roughness],
+    [glyph, dotEmissive, roughness],
   );
 
+  // cylinder material 순서: [0]=옆면(림), [1]=윗면, [2]=아랫면
   return (
     <group>
-      {/* 코인 몸체 — 전부 골드 (옆면 림 포함) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} material={goldMat} castShadow>
-        <cylinderGeometry args={[1.2, 1.2, 0.14, 64]} />
+      <mesh
+        rotation={[Math.PI / 2, 0, 0]}
+        material={[rimMat, capMat, capMat]}
+        castShadow
+      >
+        <cylinderGeometry args={[1.2, 1.2, 0.2, 96]} />
       </mesh>
-      {/* 앞면 'r.' 인레이 (코인 면 살짝 위 z=+0.0705) */}
-      <mesh position={[0, 0, 0.0705]} material={inlayMat}>
+      {/* 앞면 'r.' 인레이 */}
+      <mesh position={[0, 0, 0.1005]} material={inlayMat}>
         <circleGeometry args={[1.12, 64]} />
       </mesh>
-      {/* 뒷면 'r.' 인레이 (Y 180° 회전해 바깥 향함) */}
-      <mesh position={[0, 0, -0.0705]} rotation={[0, Math.PI, 0]} material={inlayMat}>
+      {/* 뒷면 'r.' 인레이 (바깥 향함) */}
+      <mesh position={[0, 0, -0.1005]} rotation={[0, Math.PI, 0]} material={inlayMat}>
         <circleGeometry args={[1.12, 64]} />
       </mesh>
     </group>

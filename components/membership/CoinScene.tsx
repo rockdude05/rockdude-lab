@@ -8,13 +8,15 @@ import CoinRig from "./CoinRig";
 export default function CoinScene({
   reduced = false,
   interactive = true,
-  gold = "#f5b14c",
+  gold = "#f0a830",
   roughness = 0.3,
+  poseYaw = null,
 }: {
   reduced?: boolean;
   interactive?: boolean;
   gold?: string;
   roughness?: number;
+  poseYaw?: number | null;
 }) {
   const scroll = useRef(0);
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function CoinScene({
           color="#6c63ff"
         />
       </Environment>
-      <CoinRig reduced={reduced} interactive={interactive} scrollRef={scroll}>
+      <CoinRig reduced={reduced} interactive={interactive} scrollRef={scroll} poseYaw={poseYaw}>
         <Coin gold={gold} roughness={roughness} />
       </CoinRig>
     </Canvas>

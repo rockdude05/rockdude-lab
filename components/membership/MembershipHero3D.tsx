@@ -39,9 +39,10 @@ export default function MembershipHero3D() {
   const [reduced, setReduced] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [webgl, setWebgl] = useState(true);
-  // 톤 비교용 — ?gold=f0a830 등으로 라이브 전환(gate ①). 미지정 시 기본 웜골드.
-  const [gold, setGold] = useState("#f5b14c");
+  // 확정 톤: 딥 새터레이티드 골드. ?gold=헥스로 라이브 전환 가능(QA).
+  const [gold, setGold] = useState("#f0a830");
   const [still, setStill] = useState(false); // ?still=1 → 회전 정지(정면 캡처용)
+  const [poseYaw, setPoseYaw] = useState<number | null>(null); // ?yaw=deg → 고정 3/4 포즈(QA)
 
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -52,6 +53,8 @@ export default function MembershipHero3D() {
     const q = sp.get("gold");
     if (q && /^[0-9a-fA-F]{6}$/.test(q)) setGold(`#${q}`);
     setStill(sp.get("still") === "1");
+    const y = sp.get("yaw");
+    if (y != null && y !== "" && !Number.isNaN(Number(y))) setPoseYaw((Number(y) * Math.PI) / 180);
     const el = box.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -68,7 +71,12 @@ export default function MembershipHero3D() {
     <div ref={box} style={{ width: "100%", height: 320, position: "relative" }}>
       {show3D ? (
         <CoinErrorBoundary>
-          <CoinScene reduced={still} interactive={!mobile && !still} gold={gold} />
+          <CoinScene
+            reduced={still || poseYaw != null}
+            interactive={!mobile && !still && poseYaw == null}
+            gold={gold}
+            poseYaw={poseYaw}
+          />
         </CoinErrorBoundary>
       ) : (
         <CoinFallback />

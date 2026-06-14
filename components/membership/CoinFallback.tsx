@@ -11,8 +11,8 @@ export default function CoinFallback() {
           height: 220,
           borderRadius: "50%",
           background:
-            "radial-gradient(circle at 38% 32%, #f7e3b0, #f5b14c 46%, #9a6a1e 78%, #3a2a0c)",
-          boxShadow: "0 0 80px rgba(245,177,76,0.45), inset 0 2px 0 rgba(255,255,255,0.4)",
+            "radial-gradient(circle at 38% 32%, #ffe2a6, #f0a830 46%, #946012 78%, #34230a)",
+          boxShadow: "0 0 80px rgba(240,168,48,0.45), inset 0 2px 0 rgba(255,255,255,0.4)",
         }}
       />
     </div>

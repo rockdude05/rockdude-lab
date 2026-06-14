@@ -9,16 +9,22 @@ export default function CoinRig({
   reduced = false,
   interactive = true,
   scrollRef,
+  poseYaw = null,
 }: {
   children: React.ReactNode;
   reduced?: boolean;
   interactive?: boolean;
   scrollRef?: React.MutableRefObject<number>; // 0~1 히어로 스크롤 진행도
+  poseYaw?: number | null; // QA: 고정 yaw(라디안)로 정지 — 3/4 캡처용
 }) {
   const g = useRef<THREE.Group>(null);
   useFrame((state, dt) => {
     const grp = g.current;
     if (!grp) return;
+    if (poseYaw != null) {
+      grp.rotation.set(0.16, poseYaw, 0); // 살짝 위에서 본 3/4 포즈(림·두께 노출)
+      return;
+    }
     if (!reduced) grp.rotation.y += dt * 0.5; // 자동 회전
     const sp = scrollRef?.current ?? 0;
     // 패럴랙스(마우스) + 스크롤(기울기·후퇴)
